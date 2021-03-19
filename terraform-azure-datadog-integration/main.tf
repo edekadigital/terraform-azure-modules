@@ -1,7 +1,7 @@
 
 # Assign monitoring reader role for subscriptions
 resource "azurerm_role_assignment" "datadog" {
-  for_each             = var.subscriptions
+  for_each             = toset( var.subscriptions )
   scope                = each.value
   role_definition_name = "Monitoring Reader"
   principal_id         = azuread_service_principal.datadog.id
