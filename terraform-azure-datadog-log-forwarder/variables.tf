@@ -18,7 +18,7 @@ variable "eventhub_message_retention" {
 
 variable "eventhub_partition_count" {
   type = string
-  default = "4" // like Azure Default
+  default = "4" // like Azure default for Event Hub partition count
 }
 
 variable "forwarder-func-storage_account_name" {
