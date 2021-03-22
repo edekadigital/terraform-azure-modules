@@ -1,0 +1,9 @@
+# Terraform
+.terraform
+.terraform.lock.hcl
+
+# IntelliJ
+/.idea/
+
+# Mac
+.DS_Store
