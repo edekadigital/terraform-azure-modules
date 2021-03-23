@@ -37,6 +37,6 @@ variable "datadog_api_key" {
   type = string
 }
 
-variable "dd_tags_rules" {
+variable "dd_tags" {
   type = string
 }
