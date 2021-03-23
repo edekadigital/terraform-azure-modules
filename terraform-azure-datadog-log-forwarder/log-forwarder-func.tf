@@ -32,8 +32,8 @@ data "azurerm_storage_account_sas" "sas_deploy_datadog" {
 
 data "archive_file" "app_code_datadog" {
   type        = "zip"
-  source_dir  = "${path.module}/monitoring"
-  output_path = "${path.module}/monitoring-${replace(timestamp(), ":", "")}.zip"
+  source_dir  = "${path.module}/azure-datadog-log-forwarder"
+  output_path = "${path.module}/azure-datadog-log-forwarder-${replace(timestamp(), ":", "")}.zip"
 }
 
 // It is necessary to manually sync the function app triggers after deployment, see README
