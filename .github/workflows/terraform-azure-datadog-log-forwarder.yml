@@ -21,7 +21,6 @@ jobs:
   terraform:
     name: 'terraform-azure-datadog-log-forwarder'
     runs-on: ubuntu-latest
-    environment: production
 
     steps:
     # Checkout the repository to the GitHub Actions runner
@@ -49,7 +48,6 @@ jobs:
   node:
     name: 'node-azure-datadog-log-forwarder'
     runs-on: ubuntu-latest
-    environment: production
 
     steps:
     # Checkout the repository to the GitHub Actions runner
@@ -61,12 +59,11 @@ jobs:
       with:
         node-version: 14
         
-    - name: install dependencies
-      run: npm ci
-      
-    - name: test
-      run: npm test
-      
+    - name: test module
+      run: |
+        cd azure-datadog-log-forwarder
+        npm ci
+        npm test
 
         
         
