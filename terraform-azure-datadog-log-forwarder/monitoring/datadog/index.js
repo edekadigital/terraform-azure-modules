@@ -4,6 +4,7 @@
 // Copyright 2020 Datadog, Inc.
 
 var https = require("https");
+
 const STRING = "string"; // example: 'some message'
 const STRING_ARRAY = "string-array"; // example: ['one message', 'two message', ...]
 const JSON_OBJECT = "json-object"; // example: {"key": "value"}
@@ -19,7 +20,7 @@ const STRING_TYPE = "string";
 const DD_API_KEY = process.env.DD_API_KEY || "<DATADOG_API_KEY>";
 const DD_SITE = process.env.DD_SITE || "datadoghq.com";
 const DD_URL = process.env.DD_URL || "http-intake.logs." + DD_SITE;
-const DD_TAGS_RULES = process.env.DD_TAGS_MATRIX || ""; // Replace '' by your comma-separated list of tags
+const DD_TAGS = process.env.DD_TAGS || ""; // Replace '' by your comma-separated list of tags
 const DD_SERVICE = process.env.DD_SERVICE || "azure";
 const DD_SOURCE = process.env.DD_SOURCE || "azure";
 const DD_SOURCE_CATEGORY = process.env.DD_SOURCE_CATEGORY || "azure";
@@ -253,40 +254,14 @@ class EventhubLogForwarder {
     record["ddsource"] = metadata.source || DD_SOURCE;
     record["ddsourcecategory"] = DD_SOURCE_CATEGORY;
     record["service"] = DD_SERVICE;
-    const ddTags = this.parseProperDdTags(metadata);
-    if (ddTags.length > 0) {
-      record["ddtags"] = metadata.tags
-        .concat([
-          ddTags,
-          "forwardername:" + this.context.executionContext.functionName,
-        ])
-        .filter(Boolean)
-        .join(",");
-    } else {
-      record["ddtags"] = metadata.tags
-        .concat(["forwardername:" + this.context.executionContext.functionName])
-        .filter(Boolean)
-        .join(",");
-    }
-
+    record["ddtags"] = metadata.tags
+      .concat([
+        DD_TAGS,
+        "forwardername:" + this.context.executionContext.functionName,
+      ])
+      .filter(Boolean)
+      .join(",");
     return record;
-  }
-
-  parseProperDdTags(metadata) {
-    let ddTags = "";
-    const parsedDdMatrix = DD_TAGS_RULES.split(";");
-
-    for (let i = 0; i < parsedDdMatrix.length; i++) {
-      const element = parsedDdMatrix[i];
-      const parsedDdEntry = element.split("->");
-      const isTargetSubscription = metadata.tags.indexOf(parsedDdEntry[0]) > -1;
-
-      if (isTargetSubscription) {
-        ddTags = parsedDdEntry[1];
-        break;
-      }
-    }
-    return ddTags;
   }
 
   addTagsToStringLog(stringLog) {
