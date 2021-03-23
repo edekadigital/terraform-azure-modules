@@ -1,21 +1,23 @@
-name: 'Terraform'
+name: 'terraform-azure-datadog-log-forwarder'
 
 on:
   push:
+    paths:
+    - '$(GITHUB_WORKFLOW)/**'
     branches:
     - main
   pull_request:
 
+defaults:
+  run:
+    working-directory: $(GITHUB_WORKFLOW)
+    shell: bash
+        
 jobs:
   terraform:
     name: 'terraform-azure-datadog-log-forwarder'
     runs-on: ubuntu-latest
     environment: production
-
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
 
     steps:
     # Checkout the repository to the GitHub Actions runner
@@ -44,12 +46,7 @@ jobs:
     name: 'node-azure-datadog-log-forwarder'
     runs-on: ubuntu-latest
     environment: production
-    
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
-        
+
     steps:
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
