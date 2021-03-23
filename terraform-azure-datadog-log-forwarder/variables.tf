@@ -12,12 +12,12 @@ variable "project_name_as_resource_prefix" {
 }
 
 variable "eventhub_message_retention" {
-  type = string
+  type    = string
   default = "1" // 1 day
 }
 
 variable "eventhub_partition_count" {
-  type = string
+  type    = string
   default = "4" // like Azure default for Event Hub partition count
 }
 
