@@ -14,7 +14,7 @@ on:
 
 defaults:
   run:
-    working-directory: ${{ env.GITHUB_WORKFLOW }}
+    working-directory: ${{ github.workflow }}
     shell: bash
         
 jobs:
