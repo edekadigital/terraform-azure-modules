@@ -11,34 +11,37 @@ describe("log-forwarder", () => {
     process.env = OLD_ENV; // Restore old environment
   });
 
-  const defaultContextMock = jest.fn(() => { return {
-    log: {
-      error: (str) => {
-        expect(str).toBe('You must configure your API key before starting this function (see ## Parameters section)')
-      }
-    }
-  }});
-
   test("should log error if DD_API_KEY is not set", async () => {
     // given
-    const ctx = defaultContextMock();
+    const contextMock = jest.fn(() => { return {
+      log: {
+        error: (str) => {
+          expect(str).toBe('You must configure your API key before starting this function (see ## Parameters section)')
+        }
+      }
+    }});
     const eventHubMessages = {}
     const logForwarder = require("../src/log-forwarder");
-    await logForwarder(ctx, eventHubMessages)
+    await logForwarder(contextMock(), eventHubMessages)
 
   });
 
   test("should process empty eventHubMessages", async () => {
     // given
-
     process.env = Object.assign(process.env, { DD_API_KEY: 'value' });
-
-    const contextMock = jest.fn();
-
-    const ctx = contextMock();
+    const contextMock = jest.fn(() => { return {
+      log: {
+        error: (str) => {
+          expect(str).toBe('You must configure your API key before starting this function (see ## Parameters section)')
+        }
+      },
+      executionContext: {
+        functionName: "blah"
+      }
+    }});
     const eventHubMessages = {}
     const logForwarder = require("../src/log-forwarder");
-    await logForwarder(ctx, eventHubMessages)
+    await logForwarder(contextMock(), eventHubMessages)
 
   });
 
