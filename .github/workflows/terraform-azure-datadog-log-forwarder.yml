@@ -3,10 +3,14 @@ name: 'terraform-azure-datadog-log-forwarder'
 on:
   push:
     paths:
-    - '$(GITHUB_WORKFLOW)/**'
+    - '$GITHUB_WORKFLOW/**'
+    - '.github/workflows/$GITHUB_WORKFLOW.yml'
     branches:
     - main
   pull_request:
+    paths:
+    - '$GITHUB_WORKFLOW/**'
+    - '.github/workflows/$GITHUB_WORKFLOW.yml'
 
 defaults:
   run:
