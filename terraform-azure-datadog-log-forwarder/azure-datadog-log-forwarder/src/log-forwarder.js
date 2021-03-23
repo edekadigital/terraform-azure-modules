@@ -20,6 +20,7 @@ const STRING_TYPE = "string";
 const DD_API_KEY = process.env.DD_API_KEY || "<DATADOG_API_KEY>";
 const DD_SITE = process.env.DD_SITE || "datadoghq.com";
 const DD_URL = process.env.DD_URL || "http-intake.logs." + DD_SITE;
+const DD_PORT = process.env.DD_PORT || 443;
 const DD_TAGS = process.env.DD_TAGS || ""; // Replace '' by your comma-separated list of tags
 const DD_SERVICE = process.env.DD_SERVICE || "azure";
 const DD_SOURCE = process.env.DD_SOURCE || "azure";
@@ -82,7 +83,7 @@ class EventhubLogForwarder {
     this.context = context;
     this.options = {
       hostname: DD_URL,
-      port: 443,
+      port: DD_PORT,
       path: "/v1/input",
       method: "POST",
       headers: {
@@ -338,15 +339,20 @@ class EventhubLogForwarder {
 }
 
 module.exports = async function (context, eventHubMessages) {
-  if (!DD_API_KEY || DD_API_KEY === "<DATADOG_API_KEY>") {
-    context.log.error(
-      "You must configure your API key before starting this function (see ## Parameters section)"
-    );
-    return;
-  }
-  var promises = new EventhubLogForwarder(context).handleLogs(eventHubMessages);
 
-  return Promise.all(promises.map((p) => p.catch((e) => e)));
+  if (!DD_API_KEY || DD_API_KEY === "<DATADOG_API_KEY>") {
+    const errorMessage = "You must configure your API key before starting this function (see ## Parameters section)";
+    context.log.error( errorMessage );
+    return
+  }
+
+  const logForwarder = new EventhubLogForwarder(context);
+  try {
+    await logForwarder.handleLogs(eventHubMessages);
+  } catch (e) {
+    context.log.error(e)
+  }
+  
 };
 
 module.exports.forTests = {
