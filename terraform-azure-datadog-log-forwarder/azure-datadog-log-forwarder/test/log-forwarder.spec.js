@@ -422,4 +422,346 @@ describe("log-forwarder", () => {
       ddtags: "forwardername:myFuncName",
     });
   });
+
+  test("handleJSONArrayLogs: should send with retry for json-string-array type record", () => {
+    // given
+    const logs = ['{"message": "message one"}', '{"message": "message two"}'];
+
+    const context = {
+      executionContext: { functionName: "myFuncName" },
+    };
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
+
+    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+
+    // when
+    forwarder.handleJSONArrayLogs(logs, "json-string-array");
+
+    // then
+    expect(sendWithRetrySpy).toHaveBeenCalledTimes(2);
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(1, {
+      message: "message one",
+      ddsource: "azure",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags: "forwardername:myFuncName",
+    });
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(2, {
+      message: "message two",
+      ddsource: "azure",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags: "forwardername:myFuncName",
+    });
+  });
+
+  test("handleJSONArrayLogs: should send messaged with retry for buffer-array type record", () => {
+    // given
+    const logs = [
+      Buffer.from('{"message": "message one"}', "utf8"),
+      Buffer.from('{"message": "message two"}', "utf8"),
+    ];
+
+    const context = {
+      executionContext: { functionName: "myFuncName" },
+    };
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
+
+    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+
+    // when
+    forwarder.handleJSONArrayLogs(logs, "buffer-array");
+
+    // then
+    expect(sendWithRetrySpy).toHaveBeenCalledTimes(2);
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(1, {
+      message: "message one",
+      ddsource: "azure",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags: "forwardername:myFuncName",
+    });
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(2, {
+      message: "message two",
+      ddsource: "azure",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags: "forwardername:myFuncName",
+    });
+  });
+
+  test("handleJSONArrayLogs: should send records with retry for buffer-array type record", () => {
+    // given
+    const logs = [
+      Buffer.from(
+        "{\n" +
+          '   "records":[\n' +
+          "      {\n" +
+          '         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app"\n' +
+          "      },\n" +
+          "      {\n" +
+          '         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/other-dev-cat-app"\n' +
+          "      }\n" +
+          "   ]\n" +
+          "}",
+        "utf8"
+      ),
+      Buffer.from(
+        "{\n" +
+          '   "records":[\n' +
+          "      {\n" +
+          '         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app"\n' +
+          "      },\n" +
+          "      {\n" +
+          '         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/other-dev-cat-app"\n' +
+          "      }\n" +
+          "   ]\n" +
+          "}",
+        "utf8"
+      ),
+    ];
+
+    const context = {
+      executionContext: { functionName: "myFuncName" },
+    };
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
+
+    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+
+    // when
+    forwarder.handleJSONArrayLogs(logs, "buffer-array");
+
+    // then
+    expect(sendWithRetrySpy).toHaveBeenCalledTimes(4);
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(1, {
+      resourceId:
+        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app",
+      ddsource: "azure.web",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags:
+        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,forwardername:myFuncName",
+    });
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(2, {
+      resourceId:
+        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/other-dev-cat-app",
+      ddsource: "azure.web",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags:
+        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,forwardername:myFuncName",
+    });
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(3, {
+      resourceId:
+        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app",
+      ddsource: "azure.web",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags:
+        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,forwardername:myFuncName",
+    });
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(4, {
+      resourceId:
+        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/other-dev-cat-app",
+      ddsource: "azure.web",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags:
+        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,forwardername:myFuncName",
+    });
+  });
+
+  test("handleJSONArrayLogs: check send messages with retry for json-string-array type record", () => {
+    // given
+    const logs = ['{"message": "message one"}', '{"message": "message two"}'];
+
+    const context = {
+      executionContext: { functionName: "myFuncName" },
+    };
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
+
+    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+
+    // when
+    forwarder.handleJSONArrayLogs(logs, "json-string-array");
+
+    // then
+    expect(sendWithRetrySpy).toHaveBeenCalledTimes(2);
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(1, {
+      message: "message one",
+      ddsource: "azure",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags: "forwardername:myFuncName",
+    });
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(2, {
+      message: "message two",
+      ddsource: "azure",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags: "forwardername:myFuncName",
+    });
+  });
+
+  test("handleJSONArrayLogs: check send records with retry for json-string-array type record", () => {
+    // given
+    const logs = [
+      "{\n" +
+        '   "records":[\n' +
+        "      {\n" +
+        '         "message":"message one"\n' +
+        "      },\n" +
+        "      {\n" +
+        '         "message":"message two"\n' +
+        "      }\n" +
+        "   ]\n" +
+        "}",
+    ];
+
+    const context = {
+      executionContext: { functionName: "myFuncName" },
+    };
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
+
+    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+
+    // when
+    forwarder.handleJSONArrayLogs(logs, "json-string-array");
+
+    // then
+    expect(sendWithRetrySpy).toHaveBeenCalledTimes(2);
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(1, {
+      message: "message one",
+      ddsource: "azure",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags: "forwardername:myFuncName",
+    });
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(2, {
+      message: "message two",
+      ddsource: "azure",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags: "forwardername:myFuncName",
+    });
+  });
+
+  test("handleJSONArrayLogs: should log a warning for buffer-array type record because of not valid json input", () => {
+    // given
+    const logs = [
+      Buffer.from(
+        "{\n" +
+          '   "records":\n' +
+          "      {\n" +
+          '         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app"\n' +
+          "      },\n" +
+          "      {\n" +
+          '         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/other-dev-cat-app"\n' +
+          "      }\n" +
+          "   ]\n" +
+          "}",
+        "utf8"
+      ),
+    ];
+
+    const contextMock = jest.fn(() => {
+      return {
+        log: {
+          warn: (str) => {
+            expect(str).toBe("log is malformed json, sending as string");
+          },
+        },
+        executionContext: { functionName: "myFuncName" },
+      };
+    });
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder(
+      contextMock()
+    );
+
+    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+
+    // when
+    forwarder.handleJSONArrayLogs(logs, "buffer-array");
+
+    // then
+    expect(sendWithRetrySpy).toHaveBeenCalledTimes(1);
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(1, {
+      message:
+        '{\n   "records":\n      {\n         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app"\n      },\n      {\n         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/other-dev-cat-app"\n      }\n   ]\n}',
+      ddsource: "azure",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags: "forwardername:myFuncName",
+    });
+  });
+
+  test("handleJSONArrayLogs: should should log a warning for json-string-array type record because of not valid json input", () => {
+    // given
+    const logs = [
+      "{\n" +
+        '   "records":[\n' +
+        "      {\n" +
+        '         "message":"message one"\n' +
+        "      },\n" +
+        "      {\n" +
+        '         "message":"message two"\n' +
+        "      }\n" +
+        "   \n" +
+        "}",
+      "{\n" +
+        '   "records":[\n' +
+        "      {\n" +
+        '         "message":"message one"\n' +
+        "      },\n" +
+        "      {\n" +
+        '         "message":"message two"\n' +
+        "      }\n" +
+        "   ]\n" +
+        "}",
+    ];
+
+    const contextMock = jest.fn(() => {
+      return {
+        log: {
+          warn: (str) => {
+            expect(str).toBe("log is malformed json, sending as string");
+          },
+        },
+        executionContext: { functionName: "myFuncName" },
+      };
+    });
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder(
+      contextMock()
+    );
+
+    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+
+    // when
+    forwarder.handleJSONArrayLogs(logs, "json-string-array");
+
+    // then
+    expect(sendWithRetrySpy).toHaveBeenCalledTimes(3);
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(1, {
+      message:
+        '{\n   "records":[\n      {\n         "message":"message one"\n      },\n      {\n         "message":"message two"\n      }\n   \n}',
+      ddsource: "azure",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags: "forwardername:myFuncName",
+    });
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(2, {
+      message: "message one",
+      ddsource: "azure",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags: "forwardername:myFuncName",
+    });
+    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(3, {
+      message: "message two",
+      ddsource: "azure",
+      ddsourcecategory: "azure",
+      service: "azure",
+      ddtags: "forwardername:myFuncName",
+    });
+  });
 });
