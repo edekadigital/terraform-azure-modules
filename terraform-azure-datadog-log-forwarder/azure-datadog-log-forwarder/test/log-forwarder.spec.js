@@ -764,4 +764,187 @@ describe("log-forwarder", () => {
       ddtags: "forwardername:myFuncName",
     });
   });
+
+  test("handleLogs: should process string type of messages", async () => {
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder();
+    const getLogFormatSpy = jest
+      .spyOn(forwarder, "getLogFormat")
+      .mockReturnValue("string");
+    const formatLogAndSendSpy = jest
+      .spyOn(forwarder, "formatLogAndSend")
+      .mockReturnValue("string");
+
+    const inputLogs = [];
+    forwarder.handleLogs(inputLogs);
+    expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
+    expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
+
+    expect(formatLogAndSendSpy).toHaveBeenCalledTimes(1);
+    expect(formatLogAndSendSpy).toHaveBeenCalledWith("string", inputLogs);
+  });
+
+  test("handleLogs: should process json-string type of messages", async () => {
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder();
+    const getLogFormatSpy = jest
+      .spyOn(forwarder, "getLogFormat")
+      .mockReturnValue("json-string");
+    const formatLogAndSendSpy = jest
+      .spyOn(forwarder, "formatLogAndSend")
+      .mockReturnValue("string");
+
+    const inputLogs = "{\n" + '   "key":"value"\n' + "}";
+    forwarder.handleLogs(inputLogs);
+    expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
+    expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
+
+    expect(formatLogAndSendSpy).toHaveBeenCalledTimes(1);
+    expect(formatLogAndSendSpy).toHaveBeenCalledWith("json", { key: "value" });
+  });
+
+  test("handleLogs: should process json-object type of messages", async () => {
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder();
+    const getLogFormatSpy = jest
+      .spyOn(forwarder, "getLogFormat")
+      .mockReturnValue("json-object");
+    const formatLogAndSendSpy = jest
+      .spyOn(forwarder, "formatLogAndSend")
+      .mockReturnValue("string");
+
+    const inputLogs = { key: "value" };
+    forwarder.handleLogs(inputLogs);
+    expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
+    expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
+
+    expect(formatLogAndSendSpy).toHaveBeenCalledTimes(1);
+    expect(formatLogAndSendSpy).toHaveBeenCalledWith("json", {
+      key: "value",
+    });
+  });
+
+  test("handleLogs: should process string-array type of messages", async () => {
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder();
+    const getLogFormatSpy = jest
+      .spyOn(forwarder, "getLogFormat")
+      .mockReturnValue("string-array");
+    const formatLogAndSendSpy = jest
+      .spyOn(forwarder, "formatLogAndSend")
+      .mockReturnValue("string");
+
+    const inputLogs = ['{"key1": "value1"}', '{"key2": "value2"}'];
+    forwarder.handleLogs(inputLogs);
+    expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
+    expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
+
+    expect(formatLogAndSendSpy).toHaveBeenCalledTimes(2);
+    expect(formatLogAndSendSpy).toHaveBeenNthCalledWith(
+      1,
+      "string",
+      '{"key1": "value1"}'
+    );
+    expect(formatLogAndSendSpy).toHaveBeenNthCalledWith(
+      2,
+      "string",
+      '{"key2": "value2"}'
+    );
+  });
+
+  test("handleLogs: should process json-array type of messages", async () => {
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder();
+    const getLogFormatSpy = jest
+      .spyOn(forwarder, "getLogFormat")
+      .mockReturnValue("json-array");
+    const handleJSONArrayLogsSpy = jest
+      .spyOn(forwarder, "handleJSONArrayLogs")
+      .mockReturnValue("string");
+
+    const inputLogs = [{ key1: "value1" }, { key2: "value2" }];
+    forwarder.handleLogs(inputLogs);
+    expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
+    expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
+
+    expect(handleJSONArrayLogsSpy).toHaveBeenCalledTimes(1);
+    expect(handleJSONArrayLogsSpy).toHaveBeenNthCalledWith(
+      1,
+      inputLogs,
+      "json-array"
+    );
+  });
+
+  test("handleLogs: should process buffer-array type of messages", async () => {
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder();
+    const getLogFormatSpy = jest
+      .spyOn(forwarder, "getLogFormat")
+      .mockReturnValue("buffer-array");
+    const handleJSONArrayLogsSpy = jest
+      .spyOn(forwarder, "handleJSONArrayLogs")
+      .mockReturnValue("string");
+
+    const inputLogs = [
+      Buffer.from("bufStr1", "utf8"),
+      Buffer.from("bufStr2", "utf8"),
+    ];
+    forwarder.handleLogs(inputLogs);
+    expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
+    expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
+
+    expect(handleJSONArrayLogsSpy).toHaveBeenCalledTimes(1);
+    expect(handleJSONArrayLogsSpy).toHaveBeenNthCalledWith(
+      1,
+      inputLogs,
+      "buffer-array"
+    );
+  });
+
+  test("handleLogs: should process json-string-array type of messages", async () => {
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder();
+    const getLogFormatSpy = jest
+      .spyOn(forwarder, "getLogFormat")
+      .mockReturnValue("json-string-array");
+    const handleJSONArrayLogsSpy = jest
+      .spyOn(forwarder, "handleJSONArrayLogs")
+      .mockReturnValue("string");
+
+    const inputLogs = ['{"key": "value"}', '{"key": "value"}'];
+    forwarder.handleLogs(inputLogs);
+    expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
+    expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
+
+    expect(handleJSONArrayLogsSpy).toHaveBeenCalledTimes(1);
+    expect(handleJSONArrayLogsSpy).toHaveBeenNthCalledWith(
+      1,
+      inputLogs,
+      "json-string-array"
+    );
+  });
+
+  test("handleLogs: should log warn an don't process some messages", async () => {
+    const contextMock = jest.fn(() => {
+      return {
+        log: {
+          warn: (str) => {
+            expect(str).toBe("logs format is invalid");
+          },
+        },
+      };
+    });
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder(
+      contextMock()
+    );
+    const getLogFormatSpy = jest
+      .spyOn(forwarder, "getLogFormat")
+      .mockReturnValue("invalid");
+    const handleJSONArrayLogsSpy = jest
+      .spyOn(forwarder, "handleJSONArrayLogs")
+      .mockReturnValue("string");
+    const formatLogAndSendSpy = jest
+      .spyOn(forwarder, "formatLogAndSend")
+      .mockReturnValue("string");
+
+    const inputLogs = ['{"key": "value"}', '{"key": "value"}'];
+    forwarder.handleLogs(inputLogs);
+    expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
+    expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
+    expect(handleJSONArrayLogsSpy).toHaveBeenCalledTimes(0);
+    expect(formatLogAndSendSpy).toHaveBeenCalledTimes(0);
+  });
 });
