@@ -138,6 +138,28 @@ describe("log-forwarder", () => {
     expect(actual[7]).toBe("crm-dev-cat-app");
   });
 
+  test("createResourceIdArray: should pop end path and parse resource id of even emitter", () => {
+    // given
+    const forwarder = new logForwarder.forTests.EventhubLogForwarder();
+    const record = {
+      resourceId:
+        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app/",
+    };
+    // when
+    const actual = forwarder.createResourceIdArray(record);
+    // then
+    expect(actual.length).toBe(8);
+
+    expect(actual[0]).toBe("subscriptions");
+    expect(actual[1]).toBe("f36e599d-8bf5-4f95-9740-a38a54eb6b98");
+    expect(actual[2]).toBe("resourcegroups");
+    expect(actual[3]).toBe("crm-dev-rg");
+    expect(actual[4]).toBe("providers");
+    expect(actual[5]).toBe("microsoft.web");
+    expect(actual[6]).toBe("sites");
+    expect(actual[7]).toBe("crm-dev-cat-app");
+  });
+
   test("getLogFormat: should return json-string", () => {
     // given
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
@@ -946,5 +968,28 @@ describe("log-forwarder", () => {
     expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
     expect(handleJSONArrayLogsSpy).toHaveBeenCalledTimes(0);
     expect(formatLogAndSendSpy).toHaveBeenCalledTimes(0);
+  });
+
+  test("scrub: should match pattern and replace some part of record", async () => {
+    const ipRule = {
+      pattern: "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}",
+      replacement: "xxx.xxx.xxx.xxx",
+    };
+    const mailRule = {
+      pattern: "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+",
+      replacement: "yyy@yyy.zz",
+    };
+    const configs = {
+      scrubIp: ipRule,
+      scrubMail: mailRule,
+    };
+    const scrubber = new logForwarder.forTests.Scrubber(undefined, configs);
+    const record =
+      "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app/mustermann@gmx.de/203.000.113.195";
+
+    const actual = scrubber.scrub(record);
+    expect(actual).toBe(
+      "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app/yyy@yyy.zz/xxx.xxx.xxx.xxx"
+    );
   });
 });
