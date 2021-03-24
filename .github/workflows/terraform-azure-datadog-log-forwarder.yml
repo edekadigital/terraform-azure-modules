@@ -16,7 +16,7 @@ defaults:
   run:
     working-directory: terraform-azure-datadog-log-forwarder
     shell: bash
-        
+
 jobs:
   terraform:
     name: 'terraform-azure-datadog-log-forwarder'
@@ -41,10 +41,10 @@ jobs:
     - name: Terraform Format
       run: terraform fmt -check
 
-    # Generates an execution plan for Terraform
+    # Checks, where configuration is syntactically valid and internally consistent
     - name: Terraform Validate
       run: terraform validate
-      
+
   node:
     name: 'node-azure-datadog-log-forwarder'
     runs-on: ubuntu-latest
@@ -53,18 +53,18 @@ jobs:
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v2
-      
+
     - name: Setup Node.js environment
       uses: actions/setup-node@v2.1.5
       with:
         node-version: 14
-        
+
     - name: test module
       run: |
         cd azure-datadog-log-forwarder
         npm ci
         npm test
 
-        
-        
-    
+
+
+
