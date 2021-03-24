@@ -339,20 +339,19 @@ class EventhubLogForwarder {
 }
 
 module.exports = async function (context, eventHubMessages) {
-
   if (!DD_API_KEY || DD_API_KEY === "<DATADOG_API_KEY>") {
-    const errorMessage = "You must configure your API key before starting this function (see ## Parameters section)";
-    context.log.error( errorMessage );
-    return
+    const errorMessage =
+      "You must configure your API key before starting this function (see ## Parameters section)";
+    context.log.error(errorMessage);
+    return;
   }
 
   const logForwarder = new EventhubLogForwarder(context);
   try {
     await logForwarder.handleLogs(eventHubMessages);
   } catch (e) {
-    context.log.error(e)
+    context.log.error(e);
   }
-  
 };
 
 module.exports.forTests = {
