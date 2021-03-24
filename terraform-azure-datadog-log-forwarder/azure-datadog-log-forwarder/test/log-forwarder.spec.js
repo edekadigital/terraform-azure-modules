@@ -788,6 +788,7 @@ describe("log-forwarder", () => {
   });
 
   test("handleLogs: should process string type of messages", async () => {
+    // given
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const getLogFormatSpy = jest
       .spyOn(forwarder, "getLogFormat")
@@ -795,9 +796,12 @@ describe("log-forwarder", () => {
     const formatLogAndSendSpy = jest
       .spyOn(forwarder, "formatLogAndSend")
       .mockReturnValue("string");
-
     const inputLogs = [];
+
+    // when
     forwarder.handleLogs(inputLogs);
+
+    // then
     expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
     expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
 
@@ -806,6 +810,7 @@ describe("log-forwarder", () => {
   });
 
   test("handleLogs: should process json-string type of messages", async () => {
+    // given
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const getLogFormatSpy = jest
       .spyOn(forwarder, "getLogFormat")
@@ -813,9 +818,12 @@ describe("log-forwarder", () => {
     const formatLogAndSendSpy = jest
       .spyOn(forwarder, "formatLogAndSend")
       .mockReturnValue("string");
-
     const inputLogs = "{\n" + '   "key":"value"\n' + "}";
+
+    // when
     forwarder.handleLogs(inputLogs);
+
+    // then
     expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
     expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
 
@@ -824,6 +832,7 @@ describe("log-forwarder", () => {
   });
 
   test("handleLogs: should process json-object type of messages", async () => {
+    // given
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const getLogFormatSpy = jest
       .spyOn(forwarder, "getLogFormat")
@@ -831,9 +840,12 @@ describe("log-forwarder", () => {
     const formatLogAndSendSpy = jest
       .spyOn(forwarder, "formatLogAndSend")
       .mockReturnValue("string");
-
     const inputLogs = { key: "value" };
+
+    // when
     forwarder.handleLogs(inputLogs);
+
+    // then
     expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
     expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
 
@@ -844,6 +856,7 @@ describe("log-forwarder", () => {
   });
 
   test("handleLogs: should process string-array type of messages", async () => {
+    // given
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const getLogFormatSpy = jest
       .spyOn(forwarder, "getLogFormat")
@@ -851,9 +864,12 @@ describe("log-forwarder", () => {
     const formatLogAndSendSpy = jest
       .spyOn(forwarder, "formatLogAndSend")
       .mockReturnValue("string");
-
     const inputLogs = ['{"key1": "value1"}', '{"key2": "value2"}'];
+
+    // when
     forwarder.handleLogs(inputLogs);
+
+    // then
     expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
     expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
 
@@ -871,6 +887,7 @@ describe("log-forwarder", () => {
   });
 
   test("handleLogs: should process json-array type of messages", async () => {
+    // given
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const getLogFormatSpy = jest
       .spyOn(forwarder, "getLogFormat")
@@ -878,9 +895,12 @@ describe("log-forwarder", () => {
     const handleJSONArrayLogsSpy = jest
       .spyOn(forwarder, "handleJSONArrayLogs")
       .mockReturnValue("string");
-
     const inputLogs = [{ key1: "value1" }, { key2: "value2" }];
+
+    // when
     forwarder.handleLogs(inputLogs);
+
+    // then
     expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
     expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
 
@@ -893,6 +913,7 @@ describe("log-forwarder", () => {
   });
 
   test("handleLogs: should process buffer-array type of messages", async () => {
+    // given
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const getLogFormatSpy = jest
       .spyOn(forwarder, "getLogFormat")
@@ -900,12 +921,15 @@ describe("log-forwarder", () => {
     const handleJSONArrayLogsSpy = jest
       .spyOn(forwarder, "handleJSONArrayLogs")
       .mockReturnValue("string");
-
     const inputLogs = [
       Buffer.from("bufStr1", "utf8"),
       Buffer.from("bufStr2", "utf8"),
     ];
+
+    // when
     forwarder.handleLogs(inputLogs);
+
+    // then
     expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
     expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
 
@@ -918,6 +942,7 @@ describe("log-forwarder", () => {
   });
 
   test("handleLogs: should process json-string-array type of messages", async () => {
+    // given
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const getLogFormatSpy = jest
       .spyOn(forwarder, "getLogFormat")
@@ -925,9 +950,12 @@ describe("log-forwarder", () => {
     const handleJSONArrayLogsSpy = jest
       .spyOn(forwarder, "handleJSONArrayLogs")
       .mockReturnValue("string");
-
     const inputLogs = ['{"key": "value"}', '{"key": "value"}'];
+
+    // when
     forwarder.handleLogs(inputLogs);
+
+    // then
     expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
     expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
 
@@ -940,6 +968,7 @@ describe("log-forwarder", () => {
   });
 
   test("handleLogs: should log warn an don't process some messages", async () => {
+    // given
     const contextMock = jest.fn(() => {
       return {
         log: {
@@ -961,9 +990,12 @@ describe("log-forwarder", () => {
     const formatLogAndSendSpy = jest
       .spyOn(forwarder, "formatLogAndSend")
       .mockReturnValue("string");
-
     const inputLogs = ['{"key": "value"}', '{"key": "value"}'];
+
+    // when
     forwarder.handleLogs(inputLogs);
+
+    // then
     expect(getLogFormatSpy).toHaveBeenCalledTimes(1);
     expect(getLogFormatSpy).toHaveBeenCalledWith(inputLogs);
     expect(handleJSONArrayLogsSpy).toHaveBeenCalledTimes(0);
@@ -971,6 +1003,7 @@ describe("log-forwarder", () => {
   });
 
   test("scrub: should match pattern and replace some part of record", async () => {
+    // given
     const ipRule = {
       pattern: "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}",
       replacement: "xxx.xxx.xxx.xxx",
@@ -987,9 +1020,50 @@ describe("log-forwarder", () => {
     const record =
       "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app/mustermann@gmx.de/203.000.113.195";
 
+    // when
     const actual = scrubber.scrub(record);
+
+    // then
     expect(actual).toBe(
       "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app/yyy@yyy.zz/xxx.xxx.xxx.xxx"
+    );
+  });
+
+  test("scrub: should log error because of malformed pattern", async () => {
+    // given
+    const ipRule = {
+      pattern: "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}",
+      replacement: "xxx.xxx.xxx.xxx",
+    };
+    const mailRule = {
+      pattern: "[a-zA-Z0-9_.+-+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.+",
+      replacement: "yyy@yyy.zz",
+    };
+    const configs = {
+      scrubIp: ipRule,
+      scrubMail: mailRule,
+    };
+    const contextMock = jest.fn(() => {
+      return {
+        log: {
+          error: (str) => {
+            expect(str).toBe(
+              "Regexp for rule scrubMail pattern [a-zA-Z0-9_.+-+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.+ is malformed, skipping. Please update the pattern for this rule to be applied."
+            );
+          },
+        },
+      };
+    });
+    const scrubber = new logForwarder.forTests.Scrubber(contextMock(), configs);
+    const record =
+      "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app/mustermann@gmx.de/203.000.113.195";
+
+    // when
+    const actual = scrubber.scrub(record);
+
+    // then
+    expect(actual).toBe(
+      "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app/mustermann@gmx.de/xxx.xxx.xxx.xxx"
     );
   });
 });
