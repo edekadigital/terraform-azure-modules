@@ -1,6 +1,5 @@
 describe("log-forwarder", () => {
   const OLD_ENV = process.env;
-  const logForwarder = require("../src/log-forwarder");
 
   beforeEach(() => {
     jest.resetModules(); // Most important - it clears the cache
@@ -13,6 +12,7 @@ describe("log-forwarder", () => {
 
   test("should log error if DD_API_KEY is not set", async () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const contextMock = jest.fn(() => {
       return {
         log: {
@@ -32,6 +32,8 @@ describe("log-forwarder", () => {
   test("should process empty eventHubMessages", async () => {
     // given
     process.env = Object.assign(process.env, { DD_API_KEY: "value" });
+    const logForwarder = require("../src/log-forwarder");
+
     const contextMock = jest.fn(() => {
       return {
         log: {
@@ -48,6 +50,52 @@ describe("log-forwarder", () => {
     });
     // when / then
     const eventHubMessages = {};
+    await logForwarder(contextMock(), eventHubMessages);
+  });
+
+  test("should process real eventHubMessages", async () => {
+    // given
+    process.env = Object.assign(process.env, { DD_API_KEY: "value" });
+    const logForwarder = require("../src/log-forwarder");
+    const contextMock = jest.fn(() => {
+      return {
+        log: {
+          error: (str) => {
+            expect(str).toBe(
+              "You must configure your API key before starting this function (see ## Parameters section)"
+            );
+          },
+        },
+        executionContext: {
+          functionName: "blah",
+        },
+      };
+    });
+    // when / then
+    const eventHubMessages = [
+      {
+        records: [
+          {
+            time: "2019-07-15T18:00:22.6235064Z",
+            resourceId:
+              "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app",
+            category: "AppServiceAppLogs",
+            level: "Error",
+            operationName:
+              "Microsoft.DummyProvider/dummyResourceType/dummySubType/dummyAction",
+          },
+          {
+            time: "2019-07-15T18:01:15.7532989Z",
+            resourceId:
+              "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app",
+            category: "AppServiceAppLogs",
+            level: "Information",
+            operationName:
+              "Microsoft.DummyProvider/dummyResourceType/dummySubType/dummyAction",
+          },
+        ],
+      },
+    ];
     await logForwarder(contextMock(), eventHubMessages);
   });
 

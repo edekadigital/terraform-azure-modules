@@ -111,16 +111,7 @@ class EventhubLogForwarder {
           resolve();
         })
         .catch((err) => {
-          setTimeout(() => {
-            this.send(record)
-              .then(resolve)
-              .catch((err) => {
-                this.context.log.error(
-                  `unable to send request after 2 tries, err: ${err}`
-                );
-                reject();
-              });
-          }, 1000);
+          reject(err);
         });
     });
   }
