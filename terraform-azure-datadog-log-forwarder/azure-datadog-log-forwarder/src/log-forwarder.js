@@ -207,7 +207,7 @@ class EventhubLogForwarder {
     if (Buffer.isBuffer(logs[0])) {
       return BUFFER_ARRAY;
     }
-    if (typeof logs[0] === "object" && 'records' in logs[0] && 'resourceId' in logs[0].records[0]) {
+    if (typeof logs[0] === "object" && !this.isEmptyObj(logs[0])) {
       return JSON_ARRAY;
     }
     if (typeof logs[0] === "string") {
@@ -218,6 +218,16 @@ class EventhubLogForwarder {
       }
     }
     return INVALID;
+  }
+
+  isEmptyObj(obj) {
+    for (var prop in obj) {
+      if (obj.hasOwnProperty(prop)) {
+        return false;
+      }
+    }
+
+    return JSON.stringify(obj) === JSON.stringify({});
   }
 
   isJsonString(record) {

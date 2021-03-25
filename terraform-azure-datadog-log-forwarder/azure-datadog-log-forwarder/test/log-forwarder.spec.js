@@ -35,20 +35,16 @@ describe("log-forwarder", () => {
     const logForwarder = require("../src/log-forwarder");
 
     const warnLogMock = jest.fn((str) => {
-      expect(str).toBe(
-        "logs format is invalid"
-      );
-    })
+      expect(str).toBe("logs format is invalid");
+    });
     const errorLogMock = jest.fn((str) => {
-      expect(str).toBe(
-        "empty array received. doing nothing."
-      );
-    })
+      expect(str).toBe("empty array received. doing nothing.");
+    });
     const contextMock = jest.fn(() => {
       return {
         log: {
           error: errorLogMock,
-          warn: warnLogMock
+          warn: warnLogMock,
         },
         executionContext: {
           functionName: "blah",
@@ -65,27 +61,34 @@ describe("log-forwarder", () => {
 
   test("should process real eventHubMessages", async () => {
     // given
-    const nock = require('nock')
+    const nock = require("nock");
 
-    const scope = nock("https://http-intake.logs.datadoghq.com/v1/input")
-      .post("/")
-      .reply(200)
+    const scope = nock("https://http-intake.logs.datadoghq.com", {
+      reqheaders: {
+        "content-type": "application/json",
+        "dd-api-key": "value",
+      },
+    })
+      .persist()
+      .post("/v1/input", (body) => {
+        return true;
+      })
+
+      .reply(200);
 
     process.env = Object.assign(process.env, { DD_API_KEY: "value" });
     const logForwarder = require("../src/log-forwarder");
     const warnLogMock = jest.fn((str) => {
-      expect(str).toBe(
-        "logs format is invalid"
-      );
-    })
+      expect(str).toBe("logs format is invalid");
+    });
     const errorLogMock = jest.fn((str) => {
       expect(str).toBe(undefined);
-    })
+    });
     const contextMock = jest.fn(() => {
       return {
         log: {
           error: errorLogMock,
-          warn: warnLogMock
+          warn: warnLogMock,
         },
         executionContext: {
           functionName: "blah",
@@ -289,7 +292,7 @@ describe("log-forwarder", () => {
     // given
     const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
-    const input = [{ key: "value" }, { key: "value" }];
+    const input = [{ resourceId: "value" }, { resourceId: "value" }];
     // when
     const actual = forwarder.getLogFormat(input);
     // then
@@ -499,14 +502,14 @@ describe("log-forwarder", () => {
         "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app",
     };
 
-    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+    const sendSpy = jest.spyOn(forwarder, "send");
 
     // when
     forwarder.formatLogAndSend("json", record);
 
     // then
-    expect(sendWithRetrySpy).toHaveBeenCalledTimes(1);
-    expect(sendWithRetrySpy).toHaveBeenCalledWith({
+    expect(sendSpy).toHaveBeenCalledTimes(1);
+    expect(sendSpy).toHaveBeenCalledWith({
       resourceId:
         "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app",
       ddsource: "azure.web",
@@ -526,14 +529,14 @@ describe("log-forwarder", () => {
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
     const messageText = "something happened";
 
-    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+    const send = jest.spyOn(forwarder, "send");
 
     // when
     forwarder.formatLogAndSend("string", messageText);
 
     // then
-    expect(sendWithRetrySpy).toHaveBeenCalledTimes(1);
-    expect(sendWithRetrySpy).toHaveBeenCalledWith({
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(send).toHaveBeenCalledWith({
       message: "something happened",
       ddsource: "azure",
       ddsourcecategory: "azure",
@@ -552,21 +555,21 @@ describe("log-forwarder", () => {
     const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
 
-    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+    const send = jest.spyOn(forwarder, "send");
 
     // when
     forwarder.handleJSONArrayLogs(logs, "json-string-array");
 
     // then
-    expect(sendWithRetrySpy).toHaveBeenCalledTimes(2);
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(1, {
+    expect(send).toHaveBeenCalledTimes(2);
+    expect(send).toHaveBeenNthCalledWith(1, {
       message: "message one",
       ddsource: "azure",
       ddsourcecategory: "azure",
       service: "azure",
       ddtags: "forwardername:myFuncName",
     });
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(2, {
+    expect(send).toHaveBeenNthCalledWith(2, {
       message: "message two",
       ddsource: "azure",
       ddsourcecategory: "azure",
@@ -588,21 +591,21 @@ describe("log-forwarder", () => {
     const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
 
-    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+    const send = jest.spyOn(forwarder, "send");
 
     // when
     forwarder.handleJSONArrayLogs(logs, "buffer-array");
 
     // then
-    expect(sendWithRetrySpy).toHaveBeenCalledTimes(2);
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(1, {
+    expect(send).toHaveBeenCalledTimes(2);
+    expect(send).toHaveBeenNthCalledWith(1, {
       message: "message one",
       ddsource: "azure",
       ddsourcecategory: "azure",
       service: "azure",
       ddtags: "forwardername:myFuncName",
     });
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(2, {
+    expect(send).toHaveBeenNthCalledWith(2, {
       message: "message two",
       ddsource: "azure",
       ddsourcecategory: "azure",
@@ -648,14 +651,14 @@ describe("log-forwarder", () => {
     const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
 
-    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+    const send = jest.spyOn(forwarder, "send");
 
     // when
     forwarder.handleJSONArrayLogs(logs, "buffer-array");
 
     // then
-    expect(sendWithRetrySpy).toHaveBeenCalledTimes(4);
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(1, {
+    expect(send).toHaveBeenCalledTimes(4);
+    expect(send).toHaveBeenNthCalledWith(1, {
       resourceId:
         "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app",
       ddsource: "azure.web",
@@ -664,7 +667,7 @@ describe("log-forwarder", () => {
       ddtags:
         "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,forwardername:myFuncName",
     });
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(2, {
+    expect(send).toHaveBeenNthCalledWith(2, {
       resourceId:
         "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/other-dev-cat-app",
       ddsource: "azure.web",
@@ -673,7 +676,7 @@ describe("log-forwarder", () => {
       ddtags:
         "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,forwardername:myFuncName",
     });
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(3, {
+    expect(send).toHaveBeenNthCalledWith(3, {
       resourceId:
         "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app",
       ddsource: "azure.web",
@@ -682,7 +685,7 @@ describe("log-forwarder", () => {
       ddtags:
         "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,forwardername:myFuncName",
     });
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(4, {
+    expect(send).toHaveBeenNthCalledWith(4, {
       resourceId:
         "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/other-dev-cat-app",
       ddsource: "azure.web",
@@ -703,21 +706,21 @@ describe("log-forwarder", () => {
     const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
 
-    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+    const send = jest.spyOn(forwarder, "send");
 
     // when
     forwarder.handleJSONArrayLogs(logs, "json-string-array");
 
     // then
-    expect(sendWithRetrySpy).toHaveBeenCalledTimes(2);
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(1, {
+    expect(send).toHaveBeenCalledTimes(2);
+    expect(send).toHaveBeenNthCalledWith(1, {
       message: "message one",
       ddsource: "azure",
       ddsourcecategory: "azure",
       service: "azure",
       ddtags: "forwardername:myFuncName",
     });
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(2, {
+    expect(send).toHaveBeenNthCalledWith(2, {
       message: "message two",
       ddsource: "azure",
       ddsourcecategory: "azure",
@@ -747,21 +750,21 @@ describe("log-forwarder", () => {
     const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
 
-    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+    const send = jest.spyOn(forwarder, "send");
 
     // when
     forwarder.handleJSONArrayLogs(logs, "json-string-array");
 
     // then
-    expect(sendWithRetrySpy).toHaveBeenCalledTimes(2);
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(1, {
+    expect(send).toHaveBeenCalledTimes(2);
+    expect(send).toHaveBeenNthCalledWith(1, {
       message: "message one",
       ddsource: "azure",
       ddsourcecategory: "azure",
       service: "azure",
       ddtags: "forwardername:myFuncName",
     });
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(2, {
+    expect(send).toHaveBeenNthCalledWith(2, {
       message: "message two",
       ddsource: "azure",
       ddsourcecategory: "azure",
@@ -803,14 +806,14 @@ describe("log-forwarder", () => {
       contextMock()
     );
 
-    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+    const send = jest.spyOn(forwarder, "send");
 
     // when
     forwarder.handleJSONArrayLogs(logs, "buffer-array");
 
     // then
-    expect(sendWithRetrySpy).toHaveBeenCalledTimes(1);
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(1, {
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(send).toHaveBeenNthCalledWith(1, {
       message:
         '{\n   "records":\n      {\n         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app"\n      },\n      {\n         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/other-dev-cat-app"\n      }\n   ]\n}',
       ddsource: "azure",
@@ -860,14 +863,14 @@ describe("log-forwarder", () => {
       contextMock()
     );
 
-    const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
+    const send = jest.spyOn(forwarder, "send");
 
     // when
     forwarder.handleJSONArrayLogs(logs, "json-string-array");
 
     // then
-    expect(sendWithRetrySpy).toHaveBeenCalledTimes(3);
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(1, {
+    expect(send).toHaveBeenCalledTimes(3);
+    expect(send).toHaveBeenNthCalledWith(1, {
       message:
         '{\n   "records":[\n      {\n         "message":"message one"\n      },\n      {\n         "message":"message two"\n      }\n   \n}',
       ddsource: "azure",
@@ -875,14 +878,14 @@ describe("log-forwarder", () => {
       service: "azure",
       ddtags: "forwardername:myFuncName",
     });
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(2, {
+    expect(send).toHaveBeenNthCalledWith(2, {
       message: "message one",
       ddsource: "azure",
       ddsourcecategory: "azure",
       service: "azure",
       ddtags: "forwardername:myFuncName",
     });
-    expect(sendWithRetrySpy).toHaveBeenNthCalledWith(3, {
+    expect(send).toHaveBeenNthCalledWith(3, {
       message: "message two",
       ddsource: "azure",
       ddsourcecategory: "azure",
@@ -1128,6 +1131,7 @@ describe("log-forwarder", () => {
       scrubIp: ipRule,
       scrubMail: mailRule,
     };
+    const logForwarder = require("../src/log-forwarder");
     const scrubber = new logForwarder.forTests.Scrubber(undefined, configs);
     const record =
       "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app/mustermann@gmx.de/203.000.113.195";
@@ -1166,6 +1170,7 @@ describe("log-forwarder", () => {
         },
       };
     });
+    const logForwarder = require("../src/log-forwarder");
     const scrubber = new logForwarder.forTests.Scrubber(contextMock(), configs);
     const record =
       "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app/mustermann@gmx.de/203.000.113.195";
