@@ -63,17 +63,27 @@ describe("log-forwarder", () => {
     // given
     const nock = require("nock");
 
-    const scope = nock("https://http-intake.logs.datadoghq.com", {
+    nock("https://http-intake.logs.datadoghq.com", {
       reqheaders: {
         "content-type": "application/json",
         "dd-api-key": "value",
       },
     })
       .persist()
-      .post("/v1/input", (body) => {
-        return true;
-      })
-
+      .post(
+        "/v1/input",
+        (body) =>
+          body.category === "AppServiceAppLogs" &&
+          body.resourceId ===
+            "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app" &&
+          body.operationName ===
+            "Microsoft.DummyProvider/dummyResourceType/dummySubType/dummyAction" &&
+          body.ddsource === "azure.web" &&
+          body.ddsourcecategory === "azure" &&
+          body.service === "azure" &&
+          body.ddtags ===
+            "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,resource_group:crm-dev-rg,forwardername:blah"
+      )
       .reply(200);
 
     process.env = Object.assign(process.env, { DD_API_KEY: "value" });
@@ -82,7 +92,7 @@ describe("log-forwarder", () => {
       expect(str).toBe("logs format is invalid");
     });
     const errorLogMock = jest.fn((str) => {
-      expect(str).toBe(undefined);
+      expect(str).toBeUndefined();
     });
     const contextMock = jest.fn(() => {
       return {
