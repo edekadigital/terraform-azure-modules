@@ -3,28 +3,28 @@
 // This product includes software developed at Datadog (https://www.datadoghq.com/).
 // Copyright 2020 Datadog, Inc.
 
-var https = require("https");
+var https = require('https');
 
-const STRING = "string"; // example: 'some message'
-const STRING_ARRAY = "string-array"; // example: ['one message', 'two message', ...]
-const JSON_OBJECT = "json-object"; // example: {"key": "value"}
-const JSON_ARRAY = "json-array"; // example: [{"key": "value"}, {"key": "value"}, ...] or [{"records": [{}, {}, ...]}, {"records": [{}, {}, ...]}, ...]
-const BUFFER_ARRAY = "buffer-array"; // example: [<Buffer obj>, <Buffer obj>]
-const JSON_STRING = "json-string"; // example: '{"key": "value"}'
-const JSON_STRING_ARRAY = "json-string-array"; // example: ['{"records": [{}, {}]}'] or ['{"key": "value"}']
-const INVALID = "invalid";
+const STRING = 'string'; // example: 'some message'
+const STRING_ARRAY = 'string-array'; // example: ['one message', 'two message', ...]
+const JSON_OBJECT = 'json-object'; // example: {"key": "value"}
+const JSON_ARRAY = 'json-array'; // example: [{"key": "value"}, {"key": "value"}, ...] or [{"records": [{}, {}, ...]}, {"records": [{}, {}, ...]}, ...]
+const BUFFER_ARRAY = 'buffer-array'; // example: [<Buffer obj>, <Buffer obj>]
+const JSON_STRING = 'json-string'; // example: '{"key": "value"}'
+const JSON_STRING_ARRAY = 'json-string-array'; // example: ['{"records": [{}, {}]}'] or ['{"key": "value"}']
+const INVALID = 'invalid';
 
-const JSON_TYPE = "json";
-const STRING_TYPE = "string";
+const JSON_TYPE = 'json';
+const STRING_TYPE = 'string';
 
-const DD_API_KEY = process.env.DD_API_KEY || "<DATADOG_API_KEY>";
-const DD_SITE = process.env.DD_SITE || "datadoghq.com";
-const DD_URL = process.env.DD_URL || "http-intake.logs." + DD_SITE;
+const DD_API_KEY = process.env.DD_API_KEY || '<DATADOG_API_KEY>';
+const DD_SITE = process.env.DD_SITE || 'datadoghq.com';
+const DD_URL = process.env.DD_URL || 'http-intake.logs.' + DD_SITE;
 const DD_PORT = process.env.DD_PORT || 443;
-const DD_TAGS = process.env.DD_TAGS || ""; // Replace '' by your comma-separated list of tags
-const DD_SERVICE = process.env.DD_SERVICE || "azure";
-const DD_SOURCE = process.env.DD_SOURCE || "azure";
-const DD_SOURCE_CATEGORY = process.env.DD_SOURCE_CATEGORY || "azure";
+const DD_TAGS = process.env.DD_TAGS || ''; // Replace '' by your comma-separated list of tags
+const DD_SERVICE = process.env.DD_SERVICE || 'azure';
+const DD_SOURCE = process.env.DD_SOURCE || 'azure';
+const DD_SOURCE_CATEGORY = process.env.DD_SOURCE_CATEGORY || 'azure';
 
 /*
 To scrub PII from your logs, uncomment the applicable configs below. If you'd like to scrub more than just
@@ -46,7 +46,7 @@ class ScrubberRule {
   constructor(name, pattern, replacement) {
     this.name = name;
     this.replacement = replacement;
-    this.regexp = RegExp(pattern, "g");
+    this.regexp = RegExp(pattern, 'g');
   }
 }
 
@@ -56,11 +56,11 @@ class Scrubber {
     for (const [name, settings] of Object.entries(configs)) {
       try {
         rules.push(
-          new ScrubberRule(name, settings["pattern"], settings["replacement"])
+          new ScrubberRule(name, settings['pattern'], settings['replacement'])
         );
       } catch {
         context.log.error(
-          `Regexp for rule ${name} pattern ${settings["pattern"]} is malformed, skipping. Please update the pattern for this rule to be applied.`
+          `Regexp for rule ${name} pattern ${settings['pattern']} is malformed, skipping. Please update the pattern for this rule to be applied.`
         );
       }
     }
@@ -71,7 +71,7 @@ class Scrubber {
     if (!this.rules) {
       return record;
     }
-    this.rules.forEach((rule) => {
+    this.rules.forEach(rule => {
       record = record.replace(rule.regexp, rule.replacement);
     });
     return record;
@@ -84,11 +84,11 @@ class EventhubLogForwarder {
     this.options = {
       hostname: DD_URL,
       port: DD_PORT,
-      path: "/v1/input",
-      method: "POST",
+      path: '/v1/input',
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        "DD-API-KEY": DD_API_KEY,
+        'Content-Type': 'application/json',
+        'DD-API-KEY': DD_API_KEY,
       },
       timeout: 2000,
     };
@@ -107,14 +107,14 @@ class EventhubLogForwarder {
   sendWithRetry(record) {
     return new Promise((resolve, reject) => {
       return this.send(record)
-        .then((res) => {
+        .then(res => {
           resolve();
         })
-        .catch((err) => {
+        .catch(err => {
           setTimeout(() => {
             this.send(record)
               .then(resolve)
-              .catch((err) => {
+              .catch(err => {
                 this.context.log.error(
                   `unable to send request after 2 tries, err: ${err}`
                 );
@@ -128,14 +128,14 @@ class EventhubLogForwarder {
   send(record) {
     return new Promise((resolve, reject) => {
       const req = https
-        .request(this.options, (resp) => {
+        .request(this.options, resp => {
           if (resp.statusCode < 200 || resp.statusCode > 299) {
             reject(`invalid status code ${resp.statusCode}`);
           } else {
             resolve();
           }
         })
-        .on("error", (error) => {
+        .on('error', error => {
           reject(error);
         });
       req.write(this.scrubber.scrub(JSON.stringify(record)));
@@ -158,7 +158,7 @@ class EventhubLogForwarder {
         promises.push(this.formatLogAndSend(JSON_TYPE, logs));
         break;
       case STRING_ARRAY:
-        logs.forEach((log) =>
+        logs.forEach(log =>
           promises.push(this.formatLogAndSend(STRING_TYPE, log))
         );
         break;
@@ -173,7 +173,7 @@ class EventhubLogForwarder {
         break;
       case INVALID:
       default:
-        this.context.log.warn("logs format is invalid");
+        this.context.log.warn('logs format is invalid');
         break;
     }
     return promises;
@@ -181,12 +181,12 @@ class EventhubLogForwarder {
 
   handleJSONArrayLogs(logs, logsType) {
     var promises = [];
-    logs.forEach((message) => {
+    logs.forEach(message => {
       if (logsType == JSON_STRING_ARRAY) {
         try {
           message = JSON.parse(message);
         } catch (err) {
-          this.context.log.warn("log is malformed json, sending as string");
+          this.context.log.warn('log is malformed json, sending as string');
           promises.push(this.formatLogAndSend(STRING_TYPE, message));
           return;
         }
@@ -196,13 +196,13 @@ class EventhubLogForwarder {
         try {
           message = JSON.parse(message.toString());
         } catch (err) {
-          this.context.log.warn("log is malformed json, sending as string");
+          this.context.log.warn('log is malformed json, sending as string');
           promises.push(this.formatLogAndSend(STRING_TYPE, message.toString()));
           return;
         }
       }
       if (message.records != undefined) {
-        message.records.forEach((message) =>
+        message.records.forEach(message =>
           promises.push(this.formatLogAndSend(JSON_TYPE, message))
         );
       } else {
@@ -213,13 +213,13 @@ class EventhubLogForwarder {
   }
 
   getLogFormat(logs) {
-    if (typeof logs === "string") {
+    if (typeof logs === 'string') {
       if (this.isJsonString(logs)) {
         return JSON_STRING;
       }
       return STRING;
     }
-    if (!Array.isArray(logs) && typeof logs === "object" && logs !== null) {
+    if (!Array.isArray(logs) && typeof logs === 'object' && logs !== null) {
       return JSON_OBJECT;
     }
     if (!Array.isArray(logs)) {
@@ -228,10 +228,10 @@ class EventhubLogForwarder {
     if (Buffer.isBuffer(logs[0])) {
       return BUFFER_ARRAY;
     }
-    if (typeof logs[0] === "object") {
+    if (typeof logs[0] === 'object') {
       return JSON_ARRAY;
     }
-    if (typeof logs[0] === "string") {
+    if (typeof logs[0] === 'string') {
       if (this.isJsonString(logs[0])) {
         return JSON_STRING_ARRAY;
       } else {
@@ -252,31 +252,31 @@ class EventhubLogForwarder {
 
   addTagsToJsonLog(record) {
     var metadata = this.extractMetadataFromResource(record);
-    record["ddsource"] = metadata.source || DD_SOURCE;
-    record["ddsourcecategory"] = DD_SOURCE_CATEGORY;
-    record["service"] = DD_SERVICE;
-    record["ddtags"] = metadata.tags
+    record['ddsource'] = metadata.source || DD_SOURCE;
+    record['ddsourcecategory'] = DD_SOURCE_CATEGORY;
+    record['service'] = DD_SERVICE;
+    record['ddtags'] = metadata.tags
       .concat([
         DD_TAGS,
-        "forwardername:" + this.context.executionContext.functionName,
+        'forwardername:' + this.context.executionContext.functionName,
       ])
       .filter(Boolean)
-      .join(",");
+      .join(',');
     return record;
   }
 
   addTagsToStringLog(stringLog) {
-    var jsonLog = { message: stringLog };
+    var jsonLog = {message: stringLog};
     return this.addTagsToJsonLog(jsonLog);
   }
 
   createResourceIdArray(record) {
     // Convert the resource ID in the record to an array, handling beginning/ending slashes
-    var resourceId = record.resourceId.toLowerCase().split("/");
-    if (resourceId[0] === "") {
+    var resourceId = record.resourceId.toLowerCase().split('/');
+    if (resourceId[0] === '') {
       resourceId = resourceId.slice(1);
     }
-    if (resourceId[resourceId.length - 1] === "") {
+    if (resourceId[resourceId.length - 1] === '') {
       resourceId.pop();
     }
     return resourceId;
@@ -284,40 +284,40 @@ class EventhubLogForwarder {
 
   isSource(resourceIdPart) {
     // Determine if a section of a resource ID counts as a "source," in our case it means it starts with 'microsoft.'
-    return resourceIdPart.startsWith("microsoft.");
+    return resourceIdPart.startsWith('microsoft.');
   }
 
   formatSourceType(sourceType) {
-    return sourceType.replace("microsoft.", "azure.");
+    return sourceType.replace('microsoft.', 'azure.');
   }
 
   extractMetadataFromResource(record) {
-    var metadata = { tags: [], source: "" };
+    var metadata = {tags: [], source: ''};
     if (
       record.resourceId === undefined ||
-      typeof record.resourceId !== "string"
+      typeof record.resourceId !== 'string'
     ) {
       return metadata;
     }
 
     var resourceId = this.createResourceIdArray(record);
 
-    if (resourceId[0] === "subscriptions") {
+    if (resourceId[0] === 'subscriptions') {
       if (resourceId.length > 1) {
-        metadata.tags.push("subscription_id:" + resourceId[1]);
+        metadata.tags.push('subscription_id:' + resourceId[1]);
         if (resourceId.length == 2) {
-          metadata.source = "azure.subscription";
+          metadata.source = 'azure.subscription';
           return metadata;
         }
       }
       if (resourceId.length > 3) {
-        if (resourceId[2] === "providers" && this.isSource(resourceId[3])) {
+        if (resourceId[2] === 'providers' && this.isSource(resourceId[3])) {
           // handle provider-only resource IDs
           metadata.source = this.formatSourceType(resourceId[3]);
         } else {
-          metadata.tags.push("resource_group:" + resourceId[3]);
+          metadata.tags.push('resource_group:' + resourceId[3]);
           if (resourceId.length == 4) {
-            metadata.source = "azure.resourcegroup";
+            metadata.source = 'azure.resourcegroup';
             return metadata;
           }
         }
@@ -325,12 +325,12 @@ class EventhubLogForwarder {
       if (resourceId.length > 5 && this.isSource(resourceId[5])) {
         metadata.source = this.formatSourceType(resourceId[5]);
       }
-    } else if (resourceId[0] === "tenants") {
+    } else if (resourceId[0] === 'tenants') {
       if (resourceId.length > 3 && resourceId[3]) {
-        metadata.tags.push("tenant:" + resourceId[1]);
+        metadata.tags.push('tenant:' + resourceId[1]);
         metadata.source = this.formatSourceType(resourceId[3]).replace(
-          "aadiam",
-          "activedirectory"
+          'aadiam',
+          'activedirectory'
         );
       }
     }
@@ -339,9 +339,9 @@ class EventhubLogForwarder {
 }
 
 module.exports = async function (context, eventHubMessages) {
-  if (!DD_API_KEY || DD_API_KEY === "<DATADOG_API_KEY>") {
+  if (!DD_API_KEY || DD_API_KEY === '<DATADOG_API_KEY>') {
     const errorMessage =
-      "You must configure your API key before starting this function (see ## Parameters section)";
+      'You must configure your API key before starting this function (see ## Parameters section)';
     context.log.error(errorMessage);
     return;
   }

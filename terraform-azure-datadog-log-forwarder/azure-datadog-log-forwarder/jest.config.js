@@ -24,4 +24,9 @@ module.exports = {
       statements: 90,
     },
   },
+
+  // A map from regular expressions to paths to transformers
+  transform: {
+    '^.+\\.ts$': 'ts-jest',
+  },
 };
