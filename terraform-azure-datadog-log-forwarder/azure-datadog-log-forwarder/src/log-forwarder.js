@@ -101,19 +101,7 @@ class EventhubLogForwarder {
     } else {
       record = this.addTagsToStringLog(record);
     }
-    return this.sendWithRetry(record);
-  }
-
-  sendWithRetry(record) {
-    return new Promise((resolve, reject) => {
-      return this.send(record)
-        .then((res) => {
-          resolve();
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
+    return this.send(record);
   }
 
   send(record) {
@@ -219,7 +207,7 @@ class EventhubLogForwarder {
     if (Buffer.isBuffer(logs[0])) {
       return BUFFER_ARRAY;
     }
-    if (typeof logs[0] === "object") {
+    if (typeof logs[0] === "object" && 'records' in logs[0] && 'resourceId' in logs[0].records[0]) {
       return JSON_ARRAY;
     }
     if (typeof logs[0] === "string") {
@@ -339,7 +327,7 @@ module.exports = async function (context, eventHubMessages) {
 
   const logForwarder = new EventhubLogForwarder(context);
   try {
-    await logForwarder.handleLogs(eventHubMessages);
+    await Promise.all(logForwarder.handleLogs(eventHubMessages));
   } catch (e) {
     context.log.error(e);
   }

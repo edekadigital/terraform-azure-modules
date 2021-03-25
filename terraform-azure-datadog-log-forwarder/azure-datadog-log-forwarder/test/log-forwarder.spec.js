@@ -34,14 +34,21 @@ describe("log-forwarder", () => {
     process.env = Object.assign(process.env, { DD_API_KEY: "value" });
     const logForwarder = require("../src/log-forwarder");
 
+    const warnLogMock = jest.fn((str) => {
+      expect(str).toBe(
+        "logs format is invalid"
+      );
+    })
+    const errorLogMock = jest.fn((str) => {
+      expect(str).toBe(
+        "empty array received. doing nothing."
+      );
+    })
     const contextMock = jest.fn(() => {
       return {
         log: {
-          error: (str) => {
-            expect(str).toBe(
-              "You must configure your API key before starting this function (see ## Parameters section)"
-            );
-          },
+          error: errorLogMock,
+          warn: warnLogMock
         },
         executionContext: {
           functionName: "blah",
@@ -49,22 +56,36 @@ describe("log-forwarder", () => {
       };
     });
     // when / then
-    const eventHubMessages = {};
+    const eventHubMessages = [{}];
     await logForwarder(contextMock(), eventHubMessages);
+
+    expect(warnLogMock.mock.calls.length).toBe(1);
+    expect(errorLogMock.mock.calls.length).toBe(0);
   });
 
   test("should process real eventHubMessages", async () => {
     // given
+    const nock = require('nock')
+
+    const scope = nock("https://http-intake.logs.datadoghq.com/v1/input")
+      .post("/")
+      .reply(200)
+
     process.env = Object.assign(process.env, { DD_API_KEY: "value" });
     const logForwarder = require("../src/log-forwarder");
+    const warnLogMock = jest.fn((str) => {
+      expect(str).toBe(
+        "logs format is invalid"
+      );
+    })
+    const errorLogMock = jest.fn((str) => {
+      expect(str).toBe(undefined);
+    })
     const contextMock = jest.fn(() => {
       return {
         log: {
-          error: (str) => {
-            expect(str).toBe(
-              "You must configure your API key before starting this function (see ## Parameters section)"
-            );
-          },
+          error: errorLogMock,
+          warn: warnLogMock
         },
         executionContext: {
           functionName: "blah",
@@ -97,10 +118,13 @@ describe("log-forwarder", () => {
       },
     ];
     await logForwarder(contextMock(), eventHubMessages);
+    expect(warnLogMock.mock.calls.length).toBe(0);
+    expect(errorLogMock.mock.calls.length).toBe(0);
   });
 
   test("isSource: should return true", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     // when
     const actual = forwarder.isSource("microsoft.");
@@ -110,6 +134,7 @@ describe("log-forwarder", () => {
 
   test("isSource: should return false", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     // when
     const actual = forwarder.isSource("not_microsoft.");
@@ -119,6 +144,7 @@ describe("log-forwarder", () => {
 
   test("formatSourceType: should change microsoft to azure", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     // when
     const actual = forwarder.formatSourceType("microsoft.");
@@ -128,6 +154,7 @@ describe("log-forwarder", () => {
 
   test("isJsonString: should return true", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const jsonLogInput =
       "{\n" +
@@ -156,6 +183,7 @@ describe("log-forwarder", () => {
 
   test("isJsonString: should return false", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const notJsonLogInput = "not json input";
     // when
@@ -166,6 +194,7 @@ describe("log-forwarder", () => {
 
   test("createResourceIdArray: should parse resource id of even emitter", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const record = {
       resourceId:
@@ -188,6 +217,7 @@ describe("log-forwarder", () => {
 
   test("createResourceIdArray: should pop end path and parse resource id of even emitter", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const record = {
       resourceId:
@@ -210,6 +240,7 @@ describe("log-forwarder", () => {
 
   test("getLogFormat: should return json-string", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const input = "{\n" + '   "key":"value"\n' + "}";
     // when
@@ -220,6 +251,7 @@ describe("log-forwarder", () => {
 
   test("getLogFormat: should return string", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const input = "string";
     // when
@@ -230,6 +262,7 @@ describe("log-forwarder", () => {
 
   test("getLogFormat: should return json-object", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const input = { key: "value" };
     // when
@@ -240,6 +273,7 @@ describe("log-forwarder", () => {
 
   test("getLogFormat: should return buffer-array", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const input = [
       Buffer.from("bufStr1", "utf8"),
@@ -253,6 +287,7 @@ describe("log-forwarder", () => {
 
   test("getLogFormat: should return json-array", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const input = [{ key: "value" }, { key: "value" }];
     // when
@@ -263,6 +298,7 @@ describe("log-forwarder", () => {
 
   test("getLogFormat: should return json-string-array", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const input = ['{"key": "value"}', '{"key": "value"}'];
     // when
@@ -273,6 +309,7 @@ describe("log-forwarder", () => {
 
   test("getLogFormat: should return string-array ", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const input = ["one message", "two message"];
     // when
@@ -283,6 +320,7 @@ describe("log-forwarder", () => {
 
   test("getLogFormat: should return invalid ", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const input = 1;
     // when
@@ -293,6 +331,7 @@ describe("log-forwarder", () => {
 
   test("extractMetadataFromResource: should return metadata with empty tags and source because of undefined resourceId", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const input = {};
     // when
@@ -304,6 +343,7 @@ describe("log-forwarder", () => {
 
   test("extractMetadataFromResource: should return metadata with empty tags and source because of resourceId is not a string", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const input = { resourceId: 1 };
     // when
@@ -315,6 +355,7 @@ describe("log-forwarder", () => {
 
   test("extractMetadataFromResource: resource id is of subscriptions type and source is web app -> should add proper tags and source", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const record = {
       resourceId:
@@ -333,6 +374,7 @@ describe("log-forwarder", () => {
 
   test("extractMetadataFromResource: source is direct the subscription -> should add proper tags and source", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const record = {
       resourceId: "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98",
@@ -349,6 +391,7 @@ describe("log-forwarder", () => {
 
   test("extractMetadataFromResource: provider-only resource -> should add proper tags and source", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const record = {
       resourceId:
@@ -366,6 +409,7 @@ describe("log-forwarder", () => {
 
   test("extractMetadataFromResource: source is the resource group -> should add proper tags and source", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const record = {
       resourceId:
@@ -384,6 +428,7 @@ describe("log-forwarder", () => {
 
   test("extractMetadataFromResource: resource is a Azure AD tenant -> should add proper tags and source", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const record = {
       resourceId:
@@ -399,6 +444,7 @@ describe("log-forwarder", () => {
 
   test("addTagsToJsonLog: should add proper additional tags", () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const context = {
       executionContext: { functionName: "myFuncName" },
     };
@@ -426,6 +472,7 @@ describe("log-forwarder", () => {
     const context = {
       executionContext: { functionName: "myFuncName" },
     };
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
     const messageText = "something happened";
     // when
@@ -445,6 +492,7 @@ describe("log-forwarder", () => {
     const context = {
       executionContext: { functionName: "myFuncName" },
     };
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
     const record = {
       resourceId:
@@ -474,6 +522,7 @@ describe("log-forwarder", () => {
     const context = {
       executionContext: { functionName: "myFuncName" },
     };
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
     const messageText = "something happened";
 
@@ -500,6 +549,7 @@ describe("log-forwarder", () => {
     const context = {
       executionContext: { functionName: "myFuncName" },
     };
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
 
     const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
@@ -535,6 +585,7 @@ describe("log-forwarder", () => {
     const context = {
       executionContext: { functionName: "myFuncName" },
     };
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
 
     const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
@@ -594,6 +645,7 @@ describe("log-forwarder", () => {
     const context = {
       executionContext: { functionName: "myFuncName" },
     };
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
 
     const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
@@ -648,6 +700,7 @@ describe("log-forwarder", () => {
     const context = {
       executionContext: { functionName: "myFuncName" },
     };
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
 
     const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
@@ -691,6 +744,7 @@ describe("log-forwarder", () => {
     const context = {
       executionContext: { functionName: "myFuncName" },
     };
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
 
     const sendWithRetrySpy = jest.spyOn(forwarder, "sendWithRetry");
@@ -744,6 +798,7 @@ describe("log-forwarder", () => {
         executionContext: { functionName: "myFuncName" },
       };
     });
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(
       contextMock()
     );
@@ -800,6 +855,7 @@ describe("log-forwarder", () => {
         executionContext: { functionName: "myFuncName" },
       };
     });
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(
       contextMock()
     );
@@ -837,6 +893,7 @@ describe("log-forwarder", () => {
 
   test("handleLogs: should process string type of messages", async () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const getLogFormatSpy = jest
       .spyOn(forwarder, "getLogFormat")
@@ -859,6 +916,7 @@ describe("log-forwarder", () => {
 
   test("handleLogs: should process json-string type of messages", async () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const getLogFormatSpy = jest
       .spyOn(forwarder, "getLogFormat")
@@ -881,6 +939,7 @@ describe("log-forwarder", () => {
 
   test("handleLogs: should process json-object type of messages", async () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const getLogFormatSpy = jest
       .spyOn(forwarder, "getLogFormat")
@@ -905,6 +964,7 @@ describe("log-forwarder", () => {
 
   test("handleLogs: should process string-array type of messages", async () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const getLogFormatSpy = jest
       .spyOn(forwarder, "getLogFormat")
@@ -936,6 +996,7 @@ describe("log-forwarder", () => {
 
   test("handleLogs: should process json-array type of messages", async () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const getLogFormatSpy = jest
       .spyOn(forwarder, "getLogFormat")
@@ -962,6 +1023,7 @@ describe("log-forwarder", () => {
 
   test("handleLogs: should process buffer-array type of messages", async () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const getLogFormatSpy = jest
       .spyOn(forwarder, "getLogFormat")
@@ -991,6 +1053,7 @@ describe("log-forwarder", () => {
 
   test("handleLogs: should process json-string-array type of messages", async () => {
     // given
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const getLogFormatSpy = jest
       .spyOn(forwarder, "getLogFormat")
@@ -1026,6 +1089,7 @@ describe("log-forwarder", () => {
         },
       };
     });
+    const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(
       contextMock()
     );

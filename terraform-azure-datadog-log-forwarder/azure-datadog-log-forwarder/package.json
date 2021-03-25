@@ -4,9 +4,11 @@
   "description": "Azure function app code for log forwarding to datadog",
   "author": "Ferdi Güran <ferdi.gueran@edeka.de>",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "test-watch": "jest --watch --coverage"
   },
   "devDependencies": {
-    "jest": "^26.6.3"
+    "jest": "^26.6.3",
+    "nock": "^13.0.11"
   }
 }
