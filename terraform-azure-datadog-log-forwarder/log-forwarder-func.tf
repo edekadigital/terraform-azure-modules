@@ -39,13 +39,13 @@ data "archive_file" "app_code_datadog" {
 // It is necessary to manually sync the function app triggers after deployment, see README
 data "azurerm_function_app_host_keys" "datadog" {
   name                = azurerm_function_app.datadog.name
-  resource_group_name = var.resource_group_name
+  resource_group_name = azurerm_resource_group.datadog.name
 }
 
 resource "azurerm_app_service_plan" "datadog" {
   name                = "${var.project_name_as_resource_prefix}-datadog-plan"
   location            = var.resource_location
-  resource_group_name = var.resource_group_name
+  resource_group_name = azurerm_resource_group.datadog.name
   kind                = "FunctionApp"
   reserved            = true
 
@@ -58,7 +58,7 @@ resource "azurerm_app_service_plan" "datadog" {
 resource "azurerm_function_app" "datadog" {
   name                       = "${var.project_name_as_resource_prefix}-datadog-func"
   location                   = var.resource_location
-  resource_group_name        = var.resource_group_name
+  resource_group_name        = azurerm_resource_group.datadog.name
   app_service_plan_id        = azurerm_app_service_plan.datadog.id
   storage_account_name       = var.forwarder-func-storage_account_name
   storage_account_access_key = var.forwarder-func-storage_account_access_key

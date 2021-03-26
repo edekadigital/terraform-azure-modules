@@ -3,10 +3,6 @@ variable "resource_location" {
   default = "West Europe"
 }
 
-variable "resource_group_name" {
-  type = string
-}
-
 variable "project_name_as_resource_prefix" {
   type = string
 }
