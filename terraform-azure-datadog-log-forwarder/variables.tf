@@ -40,3 +40,7 @@ variable "datadog_api_key" {
 variable "dd_tags" {
   type = string
 }
+
+variable "subscription_id" {
+  type = string
+}
