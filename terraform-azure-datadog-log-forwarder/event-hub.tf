@@ -16,7 +16,7 @@ resource "azurerm_eventhub_namespace" "datadog" {
 }
 
 resource "azurerm_eventhub" "datadog" {
-  name                = "${var.project_name_as_resource_prefix}-datadog-evh"
+  name                = "datadog"
   namespace_name      = azurerm_eventhub_namespace.datadog.name
   resource_group_name = azurerm_resource_group.datadog.name
   message_retention   = var.eventhub_message_retention
