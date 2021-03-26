@@ -123,6 +123,7 @@ class EventhubLogForwarder {
   }
 
   handleLogs(logs) {
+    console.debug(`Received account of logs ${logs.length}`);
     var promises = [];
     var logsType = this.getLogFormat(logs);
     switch (logsType) {
