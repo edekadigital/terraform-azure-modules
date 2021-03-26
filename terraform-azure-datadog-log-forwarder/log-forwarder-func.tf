@@ -1,5 +1,21 @@
+data "archive_file" "app_code_datadog" {
+  type        = "zip"
+  source_dir  = "${path.module}/azure-datadog-log-forwarder"
+  output_path = "${path.module}/azure-datadog-log-forwarder-${replace(timestamp(), ":", "")}.zip"
+}
+
+
+resource "azurerm_storage_account" "datadog" {
+  name                      = replace("${var.project_name_as_resource_prefix}-dd-st", "-", "")
+  resource_group_name       = azurerm_resource_group.datadog.name
+  location                  = azurerm_resource_group.datadog.location
+  account_tier              = "Standard"
+  account_replication_type  = "LRS"
+  enable_https_traffic_only = true
+}
+
 data "azurerm_storage_account_sas" "sas_deploy_datadog" {
-  connection_string = var.forwarder-func-storage_connection_string
+  connection_string = azurerm_storage_account.datadog.primary_connection_string
   https_only        = true
 
   resource_types {
@@ -30,12 +46,6 @@ data "azurerm_storage_account_sas" "sas_deploy_datadog" {
   }
 }
 
-data "archive_file" "app_code_datadog" {
-  type        = "zip"
-  source_dir  = "${path.module}/azure-datadog-log-forwarder"
-  output_path = "${path.module}/azure-datadog-log-forwarder-${replace(timestamp(), ":", "")}.zip"
-}
-
 // It is necessary to manually sync the function app triggers after deployment, see README
 data "azurerm_function_app_host_keys" "datadog" {
   name                = azurerm_function_app.datadog.name
@@ -60,8 +70,8 @@ resource "azurerm_function_app" "datadog" {
   location                   = var.resource_location
   resource_group_name        = azurerm_resource_group.datadog.name
   app_service_plan_id        = azurerm_app_service_plan.datadog.id
-  storage_account_name       = var.forwarder-func-storage_account_name
-  storage_account_access_key = var.forwarder-func-storage_account_access_key
+  storage_account_name       = azurerm_storage_account.datadog.name
+  storage_account_access_key = azurerm_storage_account.datadog.primary_access_key
   version                    = "~3"
   os_type                    = "linux"
   https_only                 = true
@@ -76,7 +86,7 @@ resource "azurerm_function_app" "datadog" {
     WEBSITE_NODE_DEFAULT_VERSION = "~12"
     FUNCTION_APP_EDIT_MODE       = "readonly"
     HASH                         = filebase64sha256(data.archive_file.app_code_datadog.output_path)
-    WEBSITE_RUN_FROM_PACKAGE     = "https://${var.forwarder-func-storage_account_name}.blob.core.windows.net/${azurerm_storage_container.deployments_datadog.name}/${azurerm_storage_blob.app_code_datadog.name}${data.azurerm_storage_account_sas.sas_deploy_datadog.sas}"
+    WEBSITE_RUN_FROM_PACKAGE     = "https://${azurerm_storage_account.datadog.name}.blob.core.windows.net/${azurerm_storage_container.deployments_datadog.name}/${azurerm_storage_blob.app_code_datadog.name}${data.azurerm_storage_account_sas.sas_deploy_datadog.sas}"
 
     DD_API_KEY                  = var.datadog_api_key
     DD_SITE                     = "datadoghq.eu"
@@ -106,13 +116,13 @@ resource "null_resource" "trigger_sync_datadog" {
 
 resource "azurerm_storage_container" "deployments_datadog" {
   name                  = "function-releases"
-  storage_account_name  = var.forwarder-func-storage_account_name
+  storage_account_name  = azurerm_storage_account.datadog.name
   container_access_type = "private"
 }
 
 resource "azurerm_storage_blob" "app_code_datadog" {
   name                   = "monitoring.zip"
-  storage_account_name   = var.forwarder-func-storage_account_name
+  storage_account_name   = azurerm_storage_account.datadog.name
   storage_container_name = azurerm_storage_container.deployments_datadog.name
   type                   = "Block"
   source                 = data.archive_file.app_code_datadog.output_path
