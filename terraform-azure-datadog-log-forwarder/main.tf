@@ -4,6 +4,6 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "datadog" {
-  name = "${var.project_name_as_resource_prefix}-datadog-rg"
+  name     = "${var.project_name_as_resource_prefix}-datadog-rg"
   location = var.resource_location
 }
