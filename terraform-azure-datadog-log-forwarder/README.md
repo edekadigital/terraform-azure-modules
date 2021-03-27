@@ -23,13 +23,13 @@ At the moment it is necessary to manually sync the triggers after deployment to 
 * __eventhub_name__: name of the event hub
 * __eventhub_authorization_rule_id__: id of Event Hub Namespace's Shared Access Policy
 
-Both Event Hub Name and Rule Id are needed to configure Diagnostic Settings on Log Source App (f.e. Function App or Web App) to route proper logs from them to the Event Hub.
+Both Event Hub Name and Rule Id are needed to configure Diagnostic Settings on Log Source Apps (f.e. Function Apps or Web Apps) to route proper logs from them to the Event Hub.
 
 # Architecture
 
 ![Service Overview](azure-datadog-log-forwarder/azure-dd-log-forwarder.png)
 
-# Details to Azure Infrastructure
+# Details of Azure Infrastructure
 
 * __Event Hub__
     * SKU: _Basic_
