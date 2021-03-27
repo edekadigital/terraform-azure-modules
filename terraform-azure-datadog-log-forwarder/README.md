@@ -2,14 +2,6 @@
 
 sending logs received from eventhub to datadog
 
-# Origination
-
-This function has been inspired by:
-
-[datadog github repo](https://github.com/DataDog/datadog-serverless-functions/tree/master/azure/activity_logs_monitoring)
-
-At the moment it is necessary to manually sync the triggers after deployment to get the EventHub trigger running. See [Microsoft Documentation 1](https://docs.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package#enabling-functions-to-run-from-a-package) and [Microsoft Documentation 2](https://docs.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies#trigger-syncing)
-
 # Input variables to module
 * __resource_location__: default is _West Europe_
 * __project_name_as_resource_prefix__: project name as prefix for all created Azure Resources
@@ -48,3 +40,11 @@ Both Event Hub Name and Rule Id are needed to configure Diagnostic Settings on L
     * Plattform: _Linux_
     * Runtime: _Node.js v.12_
     * SAS for access app code from Storage Account valid from 2020-10-15 until 2030-10-15
+
+# Origination
+
+This module has been inspired by:
+
+[datadog github repo](https://github.com/DataDog/datadog-serverless-functions/tree/master/azure/activity_logs_monitoring)
+
+At the moment it is necessary to manually sync the triggers after deployment to get the EventHub trigger running. See [Microsoft Documentation 1](https://docs.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package#enabling-functions-to-run-from-a-package) and [Microsoft Documentation 2](https://docs.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies#trigger-syncing)
