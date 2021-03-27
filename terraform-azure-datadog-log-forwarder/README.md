@@ -1,6 +1,6 @@
 # azure-datadog-log-forwarder
 
-sending logs received from eventhub to datadog
+Forwarding logs received from eventhub to datadog.
 
 # Input variables to module
 * __resource_location__: default is _West Europe_
@@ -11,11 +11,50 @@ sending logs received from eventhub to datadog
 * __datadog_api_key__: target DD Api Key for forwarded logs
 * __dd_tags__: custom datadog tags attached to logs additionally to tags _subscription_id_, _resource_group_ and _forwardername_
 
+_Example of usage:_
+
+```terraform
+module "datadog_log_forwarder" {
+  source                          = "git::https://github.com/edekadigital/terraform-azure-modules.git//terraform-azure-datadog-log-forwarder?ref=v0.1.0"
+  subscription_id                 = "mySubscriptionId"
+  project_name_as_resource_prefix = "myProject-dev"
+  datadog_api_key                 = "XYZ"
+  dd_tags                         = "stage:myStage,env:myEnv,team:myTeam"
+}
+```
 # Output variables from module
 * __eventhub_name__: name of the event hub
 * __eventhub_authorization_rule_id__: id of Event Hub Namespace's Shared Access Policy
 
 Both Event Hub Name and Rule Id are needed to configure Diagnostic Settings on Log Source Apps (f.e. Function Apps or Web Apps) to route proper logs from them to the Event Hub.
+
+_Example of usage:_
+
+```terraform
+resource "azurerm_monitor_diagnostic_setting" "trigger_datadog" {
+  depends_on = [module.datadog_log_forwarder]
+
+  name                           = "datadog"
+  target_resource_id             = azurerm_app_service.myApp.id
+  eventhub_name                  = module.datadog_log_forwarder.eventhub_name
+  eventhub_authorization_rule_id = module.datadog_log_forwarder.eventhub_authorization_rule_id
+
+  log {
+    category = "AppServiceLogs"
+    enabled  = true
+  }
+
+  log {
+    category = "AppServiceConsoleLogs"
+    enabled  = true
+  }
+
+  metric {
+    category = "AllMetrics"
+    enabled  = false
+  }
+}
+```
 
 # Architecture
 
