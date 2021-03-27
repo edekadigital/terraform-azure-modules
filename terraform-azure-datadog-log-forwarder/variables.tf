@@ -17,18 +17,6 @@ variable "eventhub_partition_count" {
   default = "4" // like Azure default for Event Hub partition count
 }
 
-variable "forwarder-func-storage_account_name" {
-  type = string
-}
-
-variable "forwarder-func-storage_account_access_key" {
-  type = string
-}
-
-variable "forwarder-func-storage_connection_string" {
-  type = string
-}
-
 variable "datadog_api_key" {
   type = string
 }
