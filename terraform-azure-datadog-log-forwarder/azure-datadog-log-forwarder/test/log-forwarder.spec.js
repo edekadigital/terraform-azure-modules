@@ -17,9 +17,7 @@ describe("log-forwarder", () => {
       return {
         log: {
           verbose: (str) => {
-            expect(str).toBe(
-              "log-forwarder called with eventHubMessage: [{}]"
-            );
+            expect(str).toBe("log-forwarder called with eventHubMessage: [{}]");
           },
           error: (str) => {
             expect(str).toBe(
@@ -79,16 +77,15 @@ describe("log-forwarder", () => {
       .post(
         "/v1/input",
         (body) =>
-          body.category === "AppServiceAppLogs" &&
+          body.category === "AppServiceConsoleLogs" &&
           body.resourceId ===
-            "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app" &&
-          body.operationName ===
-            "Microsoft.DummyProvider/dummyResourceType/dummySubType/dummyAction" &&
+            "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP" &&
+          body.operationName === "Microsoft.Web/sites/log" &&
           body.ddsource === "azure.web" &&
           body.ddsourcecategory === "azure" &&
           body.service === "azure" &&
           body.ddtags ===
-            "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,resource_group:crm-dev-rg,forwardername:blah"
+            "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,resource_group:dummy-dev-rg,forwardername:blah"
       )
       .reply(200);
 
@@ -117,22 +114,30 @@ describe("log-forwarder", () => {
       {
         records: [
           {
-            time: "2019-07-15T18:00:22.6235064Z",
+            time: "2021-03-27T15:38:09.128755541Z",
             resourceId:
-              "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app",
-            category: "AppServiceAppLogs",
-            level: "Error",
-            operationName:
-              "Microsoft.DummyProvider/dummyResourceType/dummySubType/dummyAction",
+              "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",
+            operationName: "Microsoft.Web/sites/log",
+            category: "AppServiceConsoleLogs",
+            resultDescription: " 7 added, 0 removed; done.\n\n",
+            level: "Informational",
+            EventStampType: "Stamp",
+            EventPrimaryStampName: "waws-prod-am2-373",
+            EventStampName: "waws-prod-am2-373",
+            Host: "lw0sdlwk0000OI",
           },
           {
-            time: "2019-07-15T18:01:15.7532989Z",
+            time: "2021-03-27T15:38:09.128755541Z",
             resourceId:
-              "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app",
-            category: "AppServiceAppLogs",
-            level: "Information",
-            operationName:
-              "Microsoft.DummyProvider/dummyResourceType/dummySubType/dummyAction",
+              "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",
+            operationName: "Microsoft.Web/sites/log",
+            category: "AppServiceConsoleLogs",
+            resultDescription: " 5 added, 0 removed; done.\n\n",
+            level: "Warning",
+            EventStampType: "Stamp",
+            EventPrimaryStampName: "waws-prod-am2-373",
+            EventStampName: "waws-prod-am2-373",
+            Host: "lw0sdlwk0000OI",
           },
         ],
       },
@@ -178,22 +183,32 @@ describe("log-forwarder", () => {
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const jsonLogInput =
       "{\n" +
-      '    "records": [\n' +
-      "        {\n" +
-      '            "time": "2019-07-15T18:00:22.6235064Z",\n' +
-      '            "resourceId": "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app",\n' +
-      '            "category": "AppServiceAppLogs",\n' +
-      '            "level": "Error",\n' +
-      '            "operationName": "Microsoft.DummyProvider/dummyResourceType/dummySubType/dummyAction"\n' +
-      "        },\n" +
-      "        {\n" +
-      '            "time": "2019-07-15T18:01:15.7532989Z",\n' +
-      '            "resourceId": "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app",\n' +
-      '            "category": "AppServiceAppLogs",\n' +
-      '            "level": "Information",\n' +
-      '            "operationName": "Microsoft.DummyProvider/dummyResourceType/dummySubType/dummyAction"\n' +
-      "        }\n" +
-      "    ]\n" +
+      '   "records":[\n' +
+      "      {\n" +
+      '         "time":"2021-03-27T15:38:09.128755541Z",\n' +
+      '         "resourceId":"/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",\n' +
+      '         "operationName":"Microsoft.Web/sites/log",\n' +
+      '         "category":"AppServiceConsoleLogs",\n' +
+      '         "resultDescription":" 7 added, 0 removed; done.\\n\\n",\n' +
+      '         "level":"Informational",\n' +
+      '         "EventStampType":"Stamp",\n' +
+      '         "EventPrimaryStampName":"waws-prod-am2-373",\n' +
+      '         "EventStampName":"waws-prod-am2-373",\n' +
+      '         "Host":"lw0sdlwk0000OI"\n' +
+      "      },\n" +
+      "      {\n" +
+      '         "time":"2021-03-27T15:38:09.128755541Z",\n' +
+      '         "resourceId":"/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",\n' +
+      '         "operationName":"Microsoft.Web/sites/log",\n' +
+      '         "category":"AppServiceConsoleLogs",\n' +
+      '         "resultDescription":" 5 added, 0 removed; done.\\n\\n",\n' +
+      '         "level":"Warning",\n' +
+      '         "EventStampType":"Stamp",\n' +
+      '         "EventPrimaryStampName":"waws-prod-am2-373",\n' +
+      '         "EventStampName":"waws-prod-am2-373",\n' +
+      '         "Host":"lw0sdlwk0000OI"\n' +
+      "      }\n" +
+      "   ]\n" +
       "}";
     // when
     const actual = forwarder.isJsonString(jsonLogInput);
@@ -212,13 +227,13 @@ describe("log-forwarder", () => {
     expect(actual).not.toBeTruthy();
   });
 
-  test("createResourceIdArray: should parse resource id of even emitter", () => {
+  test("createResourceIdArray: should parse resource id of event emitter", () => {
     // given
     const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const record = {
       resourceId:
-        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app",
+        "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",
     };
     // when
     const actual = forwarder.createResourceIdArray(record);
@@ -228,20 +243,20 @@ describe("log-forwarder", () => {
     expect(actual[0]).toBe("subscriptions");
     expect(actual[1]).toBe("f36e599d-8bf5-4f95-9740-a38a54eb6b98");
     expect(actual[2]).toBe("resourcegroups");
-    expect(actual[3]).toBe("crm-dev-rg");
+    expect(actual[3]).toBe("dummy-dev-rg");
     expect(actual[4]).toBe("providers");
     expect(actual[5]).toBe("microsoft.web");
     expect(actual[6]).toBe("sites");
-    expect(actual[7]).toBe("crm-dev-cat-app");
+    expect(actual[7]).toBe("dummy-dev-cat-app");
   });
 
-  test("createResourceIdArray: should pop end path and parse resource id of even emitter", () => {
+  test("createResourceIdArray: should pop end path and parse resource id of event emitter", () => {
     // given
     const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const record = {
       resourceId:
-        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app/",
+        "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP/",
     };
     // when
     const actual = forwarder.createResourceIdArray(record);
@@ -251,11 +266,11 @@ describe("log-forwarder", () => {
     expect(actual[0]).toBe("subscriptions");
     expect(actual[1]).toBe("f36e599d-8bf5-4f95-9740-a38a54eb6b98");
     expect(actual[2]).toBe("resourcegroups");
-    expect(actual[3]).toBe("crm-dev-rg");
+    expect(actual[3]).toBe("dummy-dev-rg");
     expect(actual[4]).toBe("providers");
     expect(actual[5]).toBe("microsoft.web");
     expect(actual[6]).toBe("sites");
-    expect(actual[7]).toBe("crm-dev-cat-app");
+    expect(actual[7]).toBe("dummy-dev-cat-app");
   });
 
   test("getLogFormat: should return json-string", () => {
@@ -379,7 +394,7 @@ describe("log-forwarder", () => {
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const record = {
       resourceId:
-        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app",
+        "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",
     };
     // when
     const actual = forwarder.extractMetadataFromResource(record);
@@ -388,7 +403,7 @@ describe("log-forwarder", () => {
     expect(actual.tags[0]).toBe(
       "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98"
     );
-    expect(actual.tags[1]).toBe("resource_group:crm-dev-rg");
+    expect(actual.tags[1]).toBe("resource_group:dummy-dev-rg");
     expect(actual.source).toBe("azure.web");
   });
 
@@ -397,7 +412,7 @@ describe("log-forwarder", () => {
     const logForwarder = require("../src/log-forwarder");
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const record = {
-      resourceId: "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98",
+      resourceId: "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98",
     };
     // when
     const actual = forwarder.extractMetadataFromResource(record);
@@ -415,7 +430,7 @@ describe("log-forwarder", () => {
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const record = {
       resourceId:
-        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app",
+        "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",
     };
     // when
     const actual = forwarder.extractMetadataFromResource(record);
@@ -433,7 +448,7 @@ describe("log-forwarder", () => {
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const record = {
       resourceId:
-        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg",
+        "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG",
     };
     // when
     const actual = forwarder.extractMetadataFromResource(record);
@@ -442,7 +457,7 @@ describe("log-forwarder", () => {
     expect(actual.tags[0]).toBe(
       "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98"
     );
-    expect(actual.tags[1]).toBe("resource_group:crm-dev-rg");
+    expect(actual.tags[1]).toBe("resource_group:dummy-dev-rg");
     expect(actual.source).toBe("azure.resourcegroup");
   });
 
@@ -452,7 +467,7 @@ describe("log-forwarder", () => {
     const forwarder = new logForwarder.forTests.EventhubLogForwarder();
     const record = {
       resourceId:
-        "/tenants/857a7b86-2d66-46f2-92e1-25be0c27e398/providers/Microsoft.aadiam",
+        "/TENANTS/857a7b86-2d66-46f2-92e1-25be0c27e398/PROVIDERS/MICROSOFT.AADIAM",
     };
     // when
     const actual = forwarder.extractMetadataFromResource(record);
@@ -471,19 +486,19 @@ describe("log-forwarder", () => {
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
     const record = {
       resourceId:
-        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app",
+        "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",
     };
     // when
     const actual = forwarder.addTagsToJsonLog(record);
     // then
     expect(actual).toMatchObject({
       resourceId:
-        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app",
+        "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",
       ddsource: "azure.web",
       ddsourcecategory: "azure",
       service: "azure",
       ddtags:
-        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,resource_group:crm-dev-rg,forwardername:myFuncName",
+        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,resource_group:dummy-dev-rg,forwardername:myFuncName",
     });
   });
 
@@ -507,7 +522,7 @@ describe("log-forwarder", () => {
     });
   });
 
-  test("formatLogAndSend: should send with retry for json type record", () => {
+  test("formatLogAndSend: should send for json type record", () => {
     // given
     const context = {
       executionContext: { functionName: "myFuncName" },
@@ -516,7 +531,7 @@ describe("log-forwarder", () => {
     const forwarder = new logForwarder.forTests.EventhubLogForwarder(context);
     const record = {
       resourceId:
-        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app",
+        "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",
     };
 
     const sendSpy = jest.spyOn(forwarder, "send");
@@ -528,7 +543,7 @@ describe("log-forwarder", () => {
     expect(sendSpy).toHaveBeenCalledTimes(1);
     expect(sendSpy).toHaveBeenCalledWith({
       resourceId:
-        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app",
+        "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",
       ddsource: "azure.web",
       ddsourcecategory: "azure",
       service: "azure",
@@ -537,7 +552,7 @@ describe("log-forwarder", () => {
     });
   });
 
-  test("formatLogAndSend: should send with retry for not json type record", () => {
+  test("formatLogAndSend: should send for not json type record", () => {
     // given
     const context = {
       executionContext: { functionName: "myFuncName" },
@@ -562,7 +577,7 @@ describe("log-forwarder", () => {
     });
   });
 
-  test("handleJSONArrayLogs: should send with retry for json-string-array type record", () => {
+  test("handleJSONArrayLogs: should send for json-string-array type record", () => {
     // given
     const logs = ['{"message": "message one"}', '{"message": "message two"}'];
 
@@ -595,7 +610,7 @@ describe("log-forwarder", () => {
     });
   });
 
-  test("handleJSONArrayLogs: should send messaged with retry for buffer-array type record", () => {
+  test("handleJSONArrayLogs: should send messaged for buffer-array type record", () => {
     // given
     const logs = [
       Buffer.from('{"message": "message one"}', "utf8"),
@@ -631,32 +646,36 @@ describe("log-forwarder", () => {
     });
   });
 
-  test("handleJSONArrayLogs: should send records with retry for buffer-array type record", () => {
+  test("handleJSONArrayLogs: should send records for buffer-array type record", () => {
     // given
     const logs = [
       Buffer.from(
         "{\n" +
-          '   "records":[\n' +
-          "      {\n" +
-          '         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app"\n' +
-          "      },\n" +
-          "      {\n" +
-          '         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/other-dev-cat-app"\n' +
-          "      }\n" +
-          "   ]\n" +
+          '   "time":"2021-03-27T15:38:09.128755541Z",\n' +
+          '   "resourceId":"/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",\n' +
+          '   "operationName":"Microsoft.Web/sites/log",\n' +
+          '   "category":"AppServiceConsoleLogs",\n' +
+          '   "resultDescription":" 7 added, 0 removed; done.\\n\\n",\n' +
+          '   "level":"Informational",\n' +
+          '   "EventStampType":"Stamp",\n' +
+          '   "EventPrimaryStampName":"waws-prod-am2-373",\n' +
+          '   "EventStampName":"waws-prod-am2-373",\n' +
+          '   "Host":"lw0sdlwk0000OI"\n' +
           "}",
         "utf8"
       ),
       Buffer.from(
         "{\n" +
-          '   "records":[\n' +
-          "      {\n" +
-          '         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app"\n' +
-          "      },\n" +
-          "      {\n" +
-          '         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/other-dev-cat-app"\n' +
-          "      }\n" +
-          "   ]\n" +
+          '   "time":"2021-03-27T15:38:09.128755541Z",\n' +
+          '   "resourceId":"/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",\n' +
+          '   "operationName":"Microsoft.Web/sites/log",\n' +
+          '   "category":"AppServiceConsoleLogs",\n' +
+          '   "resultDescription":" 5 added, 0 removed; done.\\n\\n",\n' +
+          '   "level":"Warning",\n' +
+          '   "EventStampType":"Stamp",\n' +
+          '   "EventPrimaryStampName":"waws-prod-am2-373",\n' +
+          '   "EventStampName":"waws-prod-am2-373",\n' +
+          '   "Host":"lw0sdlwk0000OI"\n' +
           "}",
         "utf8"
       ),
@@ -674,46 +693,46 @@ describe("log-forwarder", () => {
     forwarder.handleJSONArrayLogs(logs, "buffer-array");
 
     // then
-    expect(send).toHaveBeenCalledTimes(4);
+    expect(send).toHaveBeenCalledTimes(2);
     expect(send).toHaveBeenNthCalledWith(1, {
+      time: "2021-03-27T15:38:09.128755541Z",
       resourceId:
-        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app",
+        "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",
+      operationName: "Microsoft.Web/sites/log",
+      category: "AppServiceConsoleLogs",
+      resultDescription: " 7 added, 0 removed; done.\n\n",
+      level: "Informational",
+      EventStampType: "Stamp",
+      EventPrimaryStampName: "waws-prod-am2-373",
+      EventStampName: "waws-prod-am2-373",
+      Host: "lw0sdlwk0000OI",
       ddsource: "azure.web",
       ddsourcecategory: "azure",
       service: "azure",
       ddtags:
-        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,forwardername:myFuncName",
+        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,resource_group:dummy-dev-rg,forwardername:myFuncName",
     });
     expect(send).toHaveBeenNthCalledWith(2, {
+      time: "2021-03-27T15:38:09.128755541Z",
       resourceId:
-        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/other-dev-cat-app",
+        "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",
+      operationName: "Microsoft.Web/sites/log",
+      category: "AppServiceConsoleLogs",
+      resultDescription: " 5 added, 0 removed; done.\n\n",
+      level: "Warning",
+      EventStampType: "Stamp",
+      EventPrimaryStampName: "waws-prod-am2-373",
+      EventStampName: "waws-prod-am2-373",
+      Host: "lw0sdlwk0000OI",
       ddsource: "azure.web",
       ddsourcecategory: "azure",
       service: "azure",
       ddtags:
-        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,forwardername:myFuncName",
-    });
-    expect(send).toHaveBeenNthCalledWith(3, {
-      resourceId:
-        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app",
-      ddsource: "azure.web",
-      ddsourcecategory: "azure",
-      service: "azure",
-      ddtags:
-        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,forwardername:myFuncName",
-    });
-    expect(send).toHaveBeenNthCalledWith(4, {
-      resourceId:
-        "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/other-dev-cat-app",
-      ddsource: "azure.web",
-      ddsourcecategory: "azure",
-      service: "azure",
-      ddtags:
-        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,forwardername:myFuncName",
+        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,resource_group:dummy-dev-rg,forwardername:myFuncName",
     });
   });
 
-  test("handleJSONArrayLogs: check send messages with retry for json-string-array type record", () => {
+  test("handleJSONArrayLogs: check send messages for json-string-array type record", () => {
     // given
     const logs = ['{"message": "message one"}', '{"message": "message two"}'];
 
@@ -746,7 +765,7 @@ describe("log-forwarder", () => {
     });
   });
 
-  test("handleJSONArrayLogs: check send records with retry for json-string-array type record", () => {
+  test("handleJSONArrayLogs: check send records for json-string-array type record", () => {
     // given
     const logs = [
       "{\n" +
@@ -797,10 +816,10 @@ describe("log-forwarder", () => {
         "{\n" +
           '   "records":\n' +
           "      {\n" +
-          '         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app"\n' +
+          '         "resourceId":"/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP"\n' +
           "      },\n" +
           "      {\n" +
-          '         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/other-dev-cat-app"\n' +
+          '         "resourceId":"/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP"\n' +
           "      }\n" +
           "   ]\n" +
           "}",
@@ -832,7 +851,7 @@ describe("log-forwarder", () => {
     expect(send).toHaveBeenCalledTimes(1);
     expect(send).toHaveBeenNthCalledWith(1, {
       message:
-        '{\n   "records":\n      {\n         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/crm-dev-cat-app"\n      },\n      {\n         "resourceId":"/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/providers/Microsoft.Web/sites/other-dev-cat-app"\n      }\n   ]\n}',
+        '{\n   "records":\n      {\n         "resourceId":"/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP"\n      },\n      {\n         "resourceId":"/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP"\n      }\n   ]\n}',
       ddsource: "azure",
       ddsourcecategory: "azure",
       service: "azure",
@@ -1151,14 +1170,14 @@ describe("log-forwarder", () => {
     const logForwarder = require("../src/log-forwarder");
     const scrubber = new logForwarder.forTests.Scrubber(undefined, configs);
     const record =
-      "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app/mustermann@gmx.de/203.000.113.195";
+      "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/dummy-dev-rg/providers/Microsoft.Web/sites/dummy-dev-cat-app/mustermann@gmx.de/203.000.113.195";
 
     // when
     const actual = scrubber.scrub(record);
 
     // then
     expect(actual).toBe(
-      "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app/yyy@yyy.zz/xxx.xxx.xxx.xxx"
+      "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/dummy-dev-rg/providers/Microsoft.Web/sites/dummy-dev-cat-app/yyy@yyy.zz/xxx.xxx.xxx.xxx"
     );
   });
 
@@ -1190,14 +1209,14 @@ describe("log-forwarder", () => {
     const logForwarder = require("../src/log-forwarder");
     const scrubber = new logForwarder.forTests.Scrubber(contextMock(), configs);
     const record =
-      "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app/mustermann@gmx.de/203.000.113.195";
+      "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/dummy-dev-rg/providers/Microsoft.Web/sites/dummy-dev-cat-app/mustermann@gmx.de/203.000.113.195";
 
     // when
     const actual = scrubber.scrub(record);
 
     // then
     expect(actual).toBe(
-      "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/crm-dev-rg/providers/Microsoft.Web/sites/crm-dev-cat-app/mustermann@gmx.de/xxx.xxx.xxx.xxx"
+      "/subscriptions/f36e599d-8bf5-4f95-9740-a38a54eb6b98/resourceGroups/dummy-dev-rg/providers/Microsoft.Web/sites/dummy-dev-cat-app/mustermann@gmx.de/xxx.xxx.xxx.xxx"
     );
   });
 });
