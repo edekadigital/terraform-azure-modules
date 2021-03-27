@@ -16,6 +16,11 @@ describe("log-forwarder", () => {
     const contextMock = jest.fn(() => {
       return {
         log: {
+          verbose: (str) => {
+            expect(str).toBe(
+              "log-forwarder called with eventHubMessage: [{}]"
+            );
+          },
           error: (str) => {
             expect(str).toBe(
               "You must configure your API key before starting this function (see ## Parameters section)"
@@ -25,7 +30,7 @@ describe("log-forwarder", () => {
       };
     });
     // when / then
-    const eventHubMessages = {};
+    const eventHubMessages = [{}];
     await logForwarder(contextMock(), eventHubMessages);
   });
 
@@ -43,6 +48,7 @@ describe("log-forwarder", () => {
     const contextMock = jest.fn(() => {
       return {
         log: {
+          verbose: jest.fn(),
           error: errorLogMock,
           warn: warnLogMock,
         },
@@ -97,6 +103,7 @@ describe("log-forwarder", () => {
     const contextMock = jest.fn(() => {
       return {
         log: {
+          verbose: jest.fn(),
           error: errorLogMock,
           warn: warnLogMock,
         },

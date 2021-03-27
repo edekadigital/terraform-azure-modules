@@ -123,7 +123,6 @@ class EventhubLogForwarder {
   }
 
   handleLogs(logs) {
-    console.debug(`Received account of logs ${logs.length}`);
     var promises = [];
     var logsType = this.getLogFormat(logs);
     switch (logsType) {
@@ -329,6 +328,7 @@ class EventhubLogForwarder {
 }
 
 module.exports = async function (context, eventHubMessages) {
+  context.log.verbose(`log-forwarder called with eventHubMessage: ${JSON.stringify(eventHubMessages)}`);
   if (!DD_API_KEY || DD_API_KEY === "<DATADOG_API_KEY>") {
     const errorMessage =
       "You must configure your API key before starting this function (see ## Parameters section)";

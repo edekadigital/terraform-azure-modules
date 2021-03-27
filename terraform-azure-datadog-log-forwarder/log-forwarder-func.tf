@@ -72,9 +72,10 @@ resource "azurerm_function_app" "datadog" {
   app_service_plan_id        = azurerm_app_service_plan.datadog.id
   storage_account_name       = azurerm_storage_account.datadog.name
   storage_account_access_key = azurerm_storage_account.datadog.primary_access_key
-  version                    = "~3"
+  version                    = "node|14" // https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node?tabs=v2#node-version
   os_type                    = "linux"
   https_only                 = true
+
 
   identity {
     type = "SystemAssigned"
@@ -96,6 +97,13 @@ resource "azurerm_function_app" "datadog" {
 
   depends_on = [
   azurerm_app_service_plan.datadog]
+}
+
+resource "azurerm_application_insights" "application_insights" {
+  name                = "${azurerm_function_app.datadog.name}-app-insights"
+  location            = var.resource_location
+  resource_group_name = azurerm_resource_group.datadog.name
+  application_type    = "Node.JS"
 }
 
 resource "null_resource" "trigger_sync_datadog" {
