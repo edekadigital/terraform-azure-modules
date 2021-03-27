@@ -10,5 +10,41 @@ This function has been inspired by:
 
 At the moment it is necessary to manually sync the triggers after deployment to get the EventHub trigger running. See [Microsoft Documentation 1](https://docs.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package#enabling-functions-to-run-from-a-package) and [Microsoft Documentation 2](https://docs.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies#trigger-syncing)
 
+# Input variables to module
+* __resource_location__: default is _West Europe_
+* __project_name_as_resource_prefix__: project name as prefix for all created Azure Resources
+* __eventhub_message_retention__: retention for log events within Event Hub. Default is 1 day
+* __eventhub_partition_count__: partition count for Event Hub. Default is 4
+* __subscription_id__: id of Azure Subscription, where all Azure Resources should be build
+* __datadog_api_key__: target DD Api Key for forwarded logs
+* __dd_tags__: custom datadog tags attached to logs additionally to tags _subscription_id_, _resource_group_ and _forwardername_
+
+# Output variables from module
+* __eventhub_name__: name of the event hub
+* __eventhub_authorization_rule_id__: id of Event Hub Namespace's Shared Access Policy
+
+Both Event Hub Name and Rule Id are needed to configure Diagnostic Settings on Log Source App (f.e. Function App or Web App) to route proper logs from them to the Event Hub.
+
 # Architecture
 
+![Service Overview](azure-datadog-log-forwarder/azure-dd-log-forwarder.png)
+
+# Details to Azure Infrastructure
+
+* __Event Hub__
+    * SKU: _Basic_
+    * Capacity: _1 Throughput Unit_
+    * Default retention: _1 day_ (can be passed as module param)
+    * Partition Count: _4_ (can be passed as module param)
+
+
+* __Storage Account__
+    * Tier: _Standard_
+    * Replication Type: _LRS_
+
+
+* __Log Forwarder Function App__
+    * Tier: _Dynamic_ (consumption mode)
+    * Plattform: _Linux_
+    * Runtime: _Node.js v.12_
+    * SAS for access app code from Storage Account valid from 2020-10-15 until 2030-10-15
