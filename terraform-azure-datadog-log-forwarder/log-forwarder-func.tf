@@ -82,12 +82,13 @@ resource "azurerm_function_app" "datadog" {
   }
 
   app_settings = {
-    AzureWebJobsDisableHomepage  = true
-    FUNCTIONS_WORKER_RUNTIME     = "node"
-    WEBSITE_NODE_DEFAULT_VERSION = "~12"
-    FUNCTION_APP_EDIT_MODE       = "readonly"
-    HASH                         = filebase64sha256(data.archive_file.app_code_datadog.output_path)
-    WEBSITE_RUN_FROM_PACKAGE     = "https://${azurerm_storage_account.datadog.name}.blob.core.windows.net/${azurerm_storage_container.deployments_datadog.name}/${azurerm_storage_blob.app_code_datadog.name}${data.azurerm_storage_account_sas.sas_deploy_datadog.sas}"
+    AzureWebJobsDisableHomepage    = true
+    FUNCTIONS_WORKER_RUNTIME       = "node"
+    WEBSITE_NODE_DEFAULT_VERSION   = "~12"
+    FUNCTION_APP_EDIT_MODE         = "readonly"
+    HASH                           = filebase64sha256(data.archive_file.app_code_datadog.output_path)
+    WEBSITE_RUN_FROM_PACKAGE       = "https://${azurerm_storage_account.datadog.name}.blob.core.windows.net/${azurerm_storage_container.deployments_datadog.name}/${azurerm_storage_blob.app_code_datadog.name}${data.azurerm_storage_account_sas.sas_deploy_datadog.sas}"
+    APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.datadog.instrumentation_key
 
     DD_API_KEY                  = var.datadog_api_key
     DD_SITE                     = "datadoghq.eu"
@@ -99,8 +100,8 @@ resource "azurerm_function_app" "datadog" {
   azurerm_app_service_plan.datadog]
 }
 
-resource "azurerm_application_insights" "application_insights" {
-  name                = "${azurerm_function_app.datadog.name}-app-insights"
+resource "azurerm_application_insights" "datadog" {
+  name                = "${var.project_name_as_resource_prefix}-datadog-app-insights"
   location            = var.resource_location
   resource_group_name = azurerm_resource_group.datadog.name
   application_type    = "Node.JS"
