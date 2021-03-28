@@ -82,7 +82,7 @@ resource "azurerm_monitor_diagnostic_setting" "trigger_datadog" {
 
 # Remote / desired state
 
-Terraform remote state for created Azure resources is not maintained inside of this Terraform module. This will be done by calling Terraform code.
+Terraform remote state for created Azure resources is not maintained inside of this Terraform module. This will be done by calling Terraform code / project.
 
 
 # Origination
