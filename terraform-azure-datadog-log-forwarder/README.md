@@ -80,10 +80,18 @@ resource "azurerm_monitor_diagnostic_setting" "trigger_datadog" {
     * Runtime: _Node.js v.12_
     * SAS for access app code from Storage Account valid from 2020-10-15 until 2030-10-15
 
+# Remote / desired state
+
+Terraform remote state for created Azure resources is not maintained inside of this Terraform module. This will be done by calling Terraform code.
+
+
 # Origination
 
 This module has been inspired by:
 
 [datadog github repo](https://github.com/DataDog/datadog-serverless-functions/tree/master/azure/activity_logs_monitoring)
 
-At the moment it is necessary to manually sync the triggers after deployment to get the EventHub trigger running. See [Microsoft Documentation 1](https://docs.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package#enabling-functions-to-run-from-a-package) and [Microsoft Documentation 2](https://docs.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies#trigger-syncing)
+It is not necessary to manually sync the triggers after deployment to get the EventHub trigger running. This will be done by this Terraform module
+automatically by using approach describer [here](https://ilhicas.com/2019/08/17/Terraform-local-exec-run-always.html).
+
+For the root problem with syncing Azure Function triggers in case of running fuction from packaged source see [Microsoft Documentation 1](https://docs.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package#enabling-functions-to-run-from-a-package) and [Microsoft Documentation 2](https://docs.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies#trigger-syncing)
