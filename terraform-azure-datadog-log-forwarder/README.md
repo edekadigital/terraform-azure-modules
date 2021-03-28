@@ -91,7 +91,7 @@ This module has been inspired by:
 
 [datadog github repo](https://github.com/DataDog/datadog-serverless-functions/tree/master/azure/activity_logs_monitoring)
 
-It is not necessary to manually sync the triggers after deployment to get the EventHub trigger running. This will be done by this Terraform module
+It is not necessary to manually sync the triggers after deployment of new version of the Forwarder Function to get the EventHub trigger running. This will be done by this Terraform module
 automatically by using approach describer [here](https://ilhicas.com/2019/08/17/Terraform-local-exec-run-always.html).
 
 For the root problem with syncing Azure Function triggers in case of running fuction from packaged source see [Microsoft Documentation 1](https://docs.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package#enabling-functions-to-run-from-a-package) and [Microsoft Documentation 2](https://docs.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies#trigger-syncing)
