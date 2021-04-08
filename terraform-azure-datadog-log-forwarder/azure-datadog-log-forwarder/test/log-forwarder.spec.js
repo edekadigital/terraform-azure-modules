@@ -481,8 +481,7 @@ describe("log-forwarder", () => {
     // given
     process.env = Object.assign(process.env, {
       DD_SERVICE: "dummy-dev-cat-app",
-      DD_TAGS:
-        "stage:dev,env:dummy-project-azure-subsription-name,team:dummyTeam",
+      DD_TAGS: "stage:dev,env:dev,team:dummyTeam",
     });
     const logForwarder = require("../src/log-forwarder");
     const context = {
@@ -503,7 +502,7 @@ describe("log-forwarder", () => {
       ddsourcecategory: "azure",
       service: "dummy-dev-cat-app",
       ddtags:
-        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,resource_group:dummy-dev-rg,stage:dev,env:dummy-project-azure-subsription-name,team:dummyTeam,forwardername:myFuncName",
+        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,resource_group:dummy-dev-rg,stage:dev,env:dev,team:dummyTeam,forwardername:myFuncName",
     });
   });
 
