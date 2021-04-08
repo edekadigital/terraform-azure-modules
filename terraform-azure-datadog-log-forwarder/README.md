@@ -10,6 +10,7 @@ Forwarding logs received from eventhub to datadog.
 * __subscription_id__: id of Azure Subscription, where all Azure Resources should be build
 * __datadog_api_key__: target DD Api Key for forwarded logs
 * __dd_tags__: custom datadog tags attached to logs additionally to tags _subscription_id_, _resource_group_ and _forwardername_
+* __dd_service__: custom service tag; if no setted, default will be "azure"
 
 _Example of usage:_
 

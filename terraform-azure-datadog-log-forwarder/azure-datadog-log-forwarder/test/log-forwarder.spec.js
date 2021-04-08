@@ -479,6 +479,10 @@ describe("log-forwarder", () => {
 
   test("addTagsToJsonLog: should add proper additional tags", () => {
     // given
+    process.env = Object.assign(process.env, {
+      DD_SERVICE: "dummy-dev-cat-app",
+      DD_TAGS: "stage:dev,env:dev,team:dummyTeam",
+    });
     const logForwarder = require("../src/log-forwarder");
     const context = {
       executionContext: { functionName: "myFuncName" },
@@ -496,9 +500,9 @@ describe("log-forwarder", () => {
         "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",
       ddsource: "azure.web",
       ddsourcecategory: "azure",
-      service: "azure",
+      service: "dummy-dev-cat-app",
       ddtags:
-        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,resource_group:dummy-dev-rg,forwardername:myFuncName",
+        "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,resource_group:dummy-dev-rg,stage:dev,env:dev,team:dummyTeam,forwardername:myFuncName",
     });
   });
 
