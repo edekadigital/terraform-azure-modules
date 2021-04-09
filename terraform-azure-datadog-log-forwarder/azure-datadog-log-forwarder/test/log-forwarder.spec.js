@@ -518,7 +518,6 @@ describe("log-forwarder", () => {
       message: "something happened",
       ddsource: "azure",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags: "forwardername:myFuncName",
     });
   });
@@ -547,7 +546,6 @@ describe("log-forwarder", () => {
         "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",
       ddsource: "azure.web",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags:
         "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,forwardername:myFuncName",
     });
@@ -573,7 +571,6 @@ describe("log-forwarder", () => {
       message: "something happened",
       ddsource: "azure",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags: "forwardername:myFuncName",
     });
   });
@@ -599,14 +596,12 @@ describe("log-forwarder", () => {
       message: "message one",
       ddsource: "azure",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags: "forwardername:myFuncName",
     });
     expect(send).toHaveBeenNthCalledWith(2, {
       message: "message two",
       ddsource: "azure",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags: "forwardername:myFuncName",
     });
   });
@@ -635,14 +630,12 @@ describe("log-forwarder", () => {
       message: "message one",
       ddsource: "azure",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags: "forwardername:myFuncName",
     });
     expect(send).toHaveBeenNthCalledWith(2, {
       message: "message two",
       ddsource: "azure",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags: "forwardername:myFuncName",
     });
   });
@@ -709,7 +702,6 @@ describe("log-forwarder", () => {
       Host: "lw0sdlwk0000OI",
       ddsource: "azure.web",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags:
         "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,resource_group:dummy-dev-rg,forwardername:myFuncName",
     });
@@ -727,7 +719,6 @@ describe("log-forwarder", () => {
       Host: "lw0sdlwk0000OI",
       ddsource: "azure.web",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags:
         "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98,resource_group:dummy-dev-rg,forwardername:myFuncName",
     });
@@ -754,14 +745,12 @@ describe("log-forwarder", () => {
       message: "message one",
       ddsource: "azure",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags: "forwardername:myFuncName",
     });
     expect(send).toHaveBeenNthCalledWith(2, {
       message: "message two",
       ddsource: "azure",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags: "forwardername:myFuncName",
     });
   });
@@ -798,14 +787,12 @@ describe("log-forwarder", () => {
       message: "message one",
       ddsource: "azure",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags: "forwardername:myFuncName",
     });
     expect(send).toHaveBeenNthCalledWith(2, {
       message: "message two",
       ddsource: "azure",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags: "forwardername:myFuncName",
     });
   });
@@ -855,7 +842,6 @@ describe("log-forwarder", () => {
         '{\n   "records":\n      {\n         "resourceId":"/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP"\n      },\n      {\n         "resourceId":"/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP"\n      }\n   ]\n}',
       ddsource: "azure",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags: "forwardername:myFuncName",
     });
   });
@@ -912,21 +898,18 @@ describe("log-forwarder", () => {
         '{\n   "records":[\n      {\n         "message":"message one"\n      },\n      {\n         "message":"message two"\n      }\n   \n}',
       ddsource: "azure",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags: "forwardername:myFuncName",
     });
     expect(send).toHaveBeenNthCalledWith(2, {
       message: "message one",
       ddsource: "azure",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags: "forwardername:myFuncName",
     });
     expect(send).toHaveBeenNthCalledWith(3, {
       message: "message two",
       ddsource: "azure",
       ddsourcecategory: "azure",
-      service: "azure",
       ddtags: "forwardername:myFuncName",
     });
   });
