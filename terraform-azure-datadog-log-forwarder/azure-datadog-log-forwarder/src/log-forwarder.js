@@ -22,7 +22,7 @@ const DD_SITE = process.env.DD_SITE || "datadoghq.com";
 const DD_URL = process.env.DD_URL || "http-intake.logs." + DD_SITE;
 const DD_PORT = process.env.DD_PORT || 443;
 const DD_TAGS = process.env.DD_TAGS || ""; // Replace '' by your comma-separated list of tags
-const DD_SERVICE = process.env.DD_SERVICE || "azure";
+const DEFAULT_DD_SERVICE = "azure";
 const DD_SOURCE = process.env.DD_SOURCE || "azure";
 const DD_SOURCE_CATEGORY = process.env.DD_SOURCE_CATEGORY || "azure";
 
@@ -56,11 +56,11 @@ class Scrubber {
     for (const [name, settings] of Object.entries(configs)) {
       try {
         rules.push(
-          new ScrubberRule(name, settings["pattern"], settings["replacement"])
+            new ScrubberRule(name, settings["pattern"], settings["replacement"])
         );
       } catch {
         context.log.error(
-          `Regexp for rule ${name} pattern ${settings["pattern"]} is malformed, skipping. Please update the pattern for this rule to be applied.`
+            `Regexp for rule ${name} pattern ${settings["pattern"]} is malformed, skipping. Please update the pattern for this rule to be applied.`
         );
       }
     }
@@ -107,16 +107,16 @@ class EventhubLogForwarder {
   send(record) {
     return new Promise((resolve, reject) => {
       const req = https
-        .request(this.options, (resp) => {
-          if (resp.statusCode < 200 || resp.statusCode > 299) {
-            reject(`invalid status code ${resp.statusCode}`);
-          } else {
-            resolve();
-          }
-        })
-        .on("error", (error) => {
-          reject(error);
-        });
+      .request(this.options, (resp) => {
+        if (resp.statusCode < 200 || resp.statusCode > 299) {
+          reject(`invalid status code ${resp.statusCode}`);
+        } else {
+          resolve();
+        }
+      })
+      .on("error", (error) => {
+        reject(error);
+      });
       req.write(this.scrubber.scrub(JSON.stringify(record)));
       req.end();
     });
@@ -138,7 +138,7 @@ class EventhubLogForwarder {
         break;
       case STRING_ARRAY:
         logs.forEach((log) =>
-          promises.push(this.formatLogAndSend(STRING_TYPE, log))
+            promises.push(this.formatLogAndSend(STRING_TYPE, log))
         );
         break;
       case JSON_ARRAY:
@@ -182,7 +182,7 @@ class EventhubLogForwarder {
       }
       if (message.records != undefined) {
         message.records.forEach((message) =>
-          promises.push(this.formatLogAndSend(JSON_TYPE, message))
+            promises.push(this.formatLogAndSend(JSON_TYPE, message))
         );
       } else {
         this.formatLogAndSend(JSON_TYPE, message);
@@ -243,19 +243,19 @@ class EventhubLogForwarder {
     var metadata = this.extractMetadataFromResource(record);
     record["ddsource"] = metadata.source || DD_SOURCE;
     record["ddsourcecategory"] = DD_SOURCE_CATEGORY;
-    record["service"] = DD_SERVICE;
+    record["service"] = metadata.service || DEFAULT_DD_SERVICE;
     record["ddtags"] = metadata.tags
-      .concat([
-        DD_TAGS,
-        "forwardername:" + this.context.executionContext.functionName,
-      ])
-      .filter(Boolean)
-      .join(",");
+    .concat([
+      DD_TAGS,
+      "forwardername:" + this.context.executionContext.functionName,
+    ])
+    .filter(Boolean)
+    .join(",");
     return record;
   }
 
   addTagsToStringLog(stringLog) {
-    var jsonLog = { message: stringLog };
+    var jsonLog = {message: stringLog};
     return this.addTagsToJsonLog(jsonLog);
   }
 
@@ -281,10 +281,10 @@ class EventhubLogForwarder {
   }
 
   extractMetadataFromResource(record) {
-    var metadata = { tags: [], source: "" };
+    var metadata = {tags: [], source: "", service: DEFAULT_DD_SERVICE};
     if (
-      record.resourceId === undefined ||
-      typeof record.resourceId !== "string"
+        record.resourceId === undefined ||
+        typeof record.resourceId !== "string"
     ) {
       return metadata;
     }
@@ -303,6 +303,8 @@ class EventhubLogForwarder {
         if (resourceId[2] === "providers" && this.isSource(resourceId[3])) {
           // handle provider-only resource IDs
           metadata.source = this.formatSourceType(resourceId[3]);
+          // service name should be the last part of resourceID
+          metadata.service = resourceId[resourceId.length - 1]
         } else {
           metadata.tags.push("resource_group:" + resourceId[3]);
           if (resourceId.length == 4) {
@@ -313,13 +315,15 @@ class EventhubLogForwarder {
       }
       if (resourceId.length > 5 && this.isSource(resourceId[5])) {
         metadata.source = this.formatSourceType(resourceId[5]);
+        // service name should be the last part of resourceID
+        metadata.service = resourceId[resourceId.length - 1]
       }
     } else if (resourceId[0] === "tenants") {
       if (resourceId.length > 3 && resourceId[3]) {
         metadata.tags.push("tenant:" + resourceId[1]);
         metadata.source = this.formatSourceType(resourceId[3]).replace(
-          "aadiam",
-          "activedirectory"
+            "aadiam",
+            "activedirectory"
         );
       }
     }
@@ -328,10 +332,12 @@ class EventhubLogForwarder {
 }
 
 module.exports = async function (context, eventHubMessages) {
-  context.log.verbose(`log-forwarder called with eventHubMessage: ${JSON.stringify(eventHubMessages)}`);
+  context.log.verbose(
+      `log-forwarder called with eventHubMessage: ${JSON.stringify(
+          eventHubMessages)}`);
   if (!DD_API_KEY || DD_API_KEY === "<DATADOG_API_KEY>") {
     const errorMessage =
-      "You must configure your API key before starting this function (see ## Parameters section)";
+        "You must configure your API key before starting this function (see ## Parameters section)";
     context.log.error(errorMessage);
     return;
   }
