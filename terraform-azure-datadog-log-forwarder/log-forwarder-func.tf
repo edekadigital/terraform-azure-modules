@@ -94,7 +94,6 @@ resource "azurerm_function_app" "datadog" {
     DD_SITE                     = "datadoghq.eu"
     DATADOG_EVENTHUB_CONNECTION = "${azurerm_eventhub_namespace.datadog.default_primary_connection_string};EntityPath=datadog"
     DD_TAGS                     = var.dd_tags
-    DD_SERVICE                  = var.dd_service
   }
 
   depends_on = [

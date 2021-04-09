@@ -25,10 +25,6 @@ variable "dd_tags" {
   type = string
 }
 
-variable "dd_service" {
-  type = string
-}
-
 variable "subscription_id" {
   type = string
 }
