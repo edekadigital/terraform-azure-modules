@@ -22,7 +22,6 @@ const DD_SITE = process.env.DD_SITE || "datadoghq.com";
 const DD_URL = process.env.DD_URL || "http-intake.logs." + DD_SITE;
 const DD_PORT = process.env.DD_PORT || 443;
 const DD_TAGS = process.env.DD_TAGS || ""; // Replace '' by your comma-separated list of tags
-const DD_SERVICE = process.env.DD_SERVICE || "azure";
 const DD_SOURCE = process.env.DD_SOURCE || "azure";
 const DD_SOURCE_CATEGORY = process.env.DD_SOURCE_CATEGORY || "azure";
 
@@ -243,7 +242,6 @@ class EventhubLogForwarder {
     var metadata = this.extractMetadataFromResource(record);
     record["ddsource"] = metadata.source || DD_SOURCE;
     record["ddsourcecategory"] = DD_SOURCE_CATEGORY;
-    record["service"] = DD_SERVICE;
     record["ddtags"] = metadata.tags
       .concat([
         DD_TAGS,
