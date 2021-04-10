@@ -9,7 +9,8 @@ Forwarding logs received from eventhub to datadog.
 * __eventhub_partition_count__: partition count for Event Hub. Default is 4
 * __subscription_id__: id of Azure Subscription, where all Azure Resources should be build
 * __datadog_api_key__: target DD Api Key for forwarded logs
-* __dd_tags__: custom datadog tags attached to logs additionally to tags _subscription_id_, _resource_group_ and _forwardername_
+* __datadog_tags__: custom datadog tags attached to logs additionally to tags _subscription_id_, _resource_group_ and _forwardername_. Default is an empty tag map _{}_.
+* __datadog_site__: datadog site like (US/EU). Default id _datadoghq.eu_
 
 _Example of usage:_
 
