@@ -93,7 +93,6 @@ resource "azurerm_function_app" "datadog" {
     DD_SITE                     = var.datadog_site
     DATADOG_EVENTHUB_CONNECTION = "${azurerm_eventhub_namespace.datadog.default_primary_connection_string};EntityPath=datadog"
     DD_TAGS                     = join(",", [for k, v in var.datadog_tags : "${k}:${v}"])
-    DD_SERVICE                  = var.datadog_service
   }
 
   depends_on = [

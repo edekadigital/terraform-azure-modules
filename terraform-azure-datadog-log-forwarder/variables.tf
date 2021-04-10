@@ -8,11 +8,6 @@ variable "datadog_api_key" {
   type        = string
 }
 
-variable "datadog_service" {
-  description = "Value for `service` tag attached to all log messages"
-  type        = string
-}
-
 variable "subscription_id" {
   description = "Azure subscription id where all resources are gonna be deployed"
   type        = string
