@@ -4,7 +4,6 @@ data "archive_file" "app_code_datadog" {
   output_path = "${path.module}/azure-datadog-log-forwarder-${replace(timestamp(), ":", "")}.zip"
 }
 
-
 resource "azurerm_storage_account" "datadog" {
   name                      = replace("${var.project_name_as_resource_prefix}-dd-st", "-", "")
   resource_group_name       = azurerm_resource_group.datadog.name
@@ -91,9 +90,9 @@ resource "azurerm_function_app" "datadog" {
     APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.datadog.instrumentation_key
 
     DD_API_KEY                  = var.datadog_api_key
-    DD_SITE                     = "datadoghq.eu"
+    DD_SITE                     = var.datadog_site
     DATADOG_EVENTHUB_CONNECTION = "${azurerm_eventhub_namespace.datadog.default_primary_connection_string};EntityPath=datadog"
-    DD_TAGS                     = var.dd_tags
+    DD_TAGS                     = join(",", [for k, v in var.datadog_tags : "${k}:${v}"])
   }
 
   depends_on = [

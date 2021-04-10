@@ -1,30 +1,44 @@
-variable "resource_location" {
-  type    = string
-  default = "West Europe"
-}
-
 variable "project_name_as_resource_prefix" {
-  type = string
-}
-
-variable "eventhub_message_retention" {
-  type    = string
-  default = "1" // 1 day
-}
-
-variable "eventhub_partition_count" {
-  type    = string
-  default = "4" // like Azure default for Event Hub partition count
+  description = "Prefix for all the resounrce names"
+  type        = string
 }
 
 variable "datadog_api_key" {
-  type = string
-}
-
-variable "dd_tags" {
-  type = string
+  description = "API key for datadog"
+  type        = string
 }
 
 variable "subscription_id" {
-  type = string
+  description = "Azure subscription id where all resources are gonna be deployed"
+  type        = string
+}
+
+variable "datadog_site" {
+  description = "datadog site like (US/EU)"
+  type        = string
+  default     = "datadoghq.eu"
+}
+
+variable "datadog_tags" {
+  description = "Tags to attach to all log messages"
+  type        = map(string)
+  default     = {}
+}
+
+variable "resource_location" {
+  description = "Azure location to deploy all the things"
+  type        = string
+  default     = "West Europe"
+}
+
+variable "eventhub_message_retention" {
+  description = "Retention of events within event hub in days"
+  type        = number
+  default     = 1
+}
+
+variable "eventhub_partition_count" {
+  description = "Number of partitions within event hub"
+  type        = number
+  default     = 4
 }

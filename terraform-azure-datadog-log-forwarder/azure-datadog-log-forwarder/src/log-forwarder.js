@@ -303,7 +303,9 @@ class EventhubLogForwarder {
         if (resourceId[2] === "providers" && this.isSource(resourceId[3])) {
           // handle provider-only resource IDs
           metadata.source = this.formatSourceType(resourceId[3]);
-          // service name should be the last part of resourceID
+          // service name will be the last part of resourceID
+          // for checking resourceId of Azure Resources, use 'az resource list --name "myniceresource"' Azure CLI command:
+          // https://docs.microsoft.com/de-de/cli/azure/resource?view=azure-cli-latest#az_resource_list
           metadata.service = resourceId[resourceId.length - 1]
         } else {
           metadata.tags.push("resource_group:" + resourceId[3]);
@@ -315,7 +317,9 @@ class EventhubLogForwarder {
       }
       if (resourceId.length > 5 && this.isSource(resourceId[5])) {
         metadata.source = this.formatSourceType(resourceId[5]);
-        // service name should be the last part of resourceID
+        // service name will be the last part of resourceID
+        // for checking resourceId of Azure Resources, use 'az resource list --name "myniceresource"' Azure CLI command:
+        // https://docs.microsoft.com/de-de/cli/azure/resource?view=azure-cli-latest#az_resource_list
         metadata.service = resourceId[resourceId.length - 1]
       }
     } else if (resourceId[0] === "tenants") {
