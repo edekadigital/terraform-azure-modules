@@ -20,7 +20,7 @@ module "datadog_log_forwarder" {
   subscription_id                 = "mySubscriptionId"
   project_name_as_resource_prefix = "myProject-dev"
   datadog_api_key                 = "XYZ"
-  dd_tags                         = "stage:myStage,env:myEnv,team:myTeam"
+  datadog_tags                    = { "stage" : "myStage", "env" : "myEnv", "team" : "myTeam" }
 }
 ```
 # Output variables from module
