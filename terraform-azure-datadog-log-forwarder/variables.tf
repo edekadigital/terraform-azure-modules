@@ -1,5 +1,5 @@
 variable "project_name_as_resource_prefix" {
-  description = "Prefix for all the resounrce names"
+  description = "Prefix for all the resource names"
   type        = string
 }
 
