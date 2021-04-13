@@ -6,11 +6,12 @@ Forwarding logs received from eventhub to datadog.
 * __resource_location__: default is _West Europe_
 * __project_name_as_resource_prefix__: project name as prefix for all created Azure Resources
 * __eventhub_message_retention__: retention for log events within Event Hub. Default is 1 day
-* __eventhub_partition_count__: partition count for Event Hub. Default is 4
+* __eventhub_partition_count__: partition count for Event Hub. Defaults to 4
 * __subscription_id__: id of Azure Subscription, where all Azure Resources should be build
 * __datadog_api_key__: target DD Api Key for forwarded logs
-* __datadog_tags__: custom datadog tags attached to logs additionally to tags _subscription_id_, _resource_group_ and _forwardername_. Default is an empty tag map _{}_.
-* __datadog_site__: datadog site like (US/EU). Default id _datadoghq.eu_
+* __datadog_tags__: custom datadog tags attached to all logs additionally to tags `subscription_id`, `resource_group` and `forwardername`. Defaults to an empty map `{}`.
+* __datadog_site__: datadog site like (US/EU). Default id `datadoghq.eu`
+* __datadog_service_map__: a map translating azure service names into datadog `service` tags. Defaults to an empty map `{}`.
 
 _Example of usage:_
 
@@ -20,7 +21,15 @@ module "datadog_log_forwarder" {
   subscription_id                 = "mySubscriptionId"
   project_name_as_resource_prefix = "myProject-dev"
   datadog_api_key                 = "XYZ"
-  datadog_tags                    = { "stage" : "myStage", "env" : "myEnv", "team" : "myTeam" }
+  datadog_tags                    = { 
+    stage = "myStage"
+    env   = "myEnv"
+    team  = "myTeam"
+  }
+  datadog_service_map             = {
+    some-azure-service-name = "service-1"
+    some-other-service-name = "service-2"
+  }
 }
 ```
 # Output variables from module
