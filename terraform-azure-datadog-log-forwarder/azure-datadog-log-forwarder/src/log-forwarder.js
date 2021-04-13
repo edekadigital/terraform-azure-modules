@@ -25,6 +25,7 @@ const DD_TAGS = process.env.DD_TAGS || ""; // Replace '' by your comma-separated
 const DEFAULT_DD_SERVICE = "azure";
 const DD_SOURCE = process.env.DD_SOURCE || "azure";
 const DD_SOURCE_CATEGORY = process.env.DD_SOURCE_CATEGORY || "azure";
+const DD_SERVICE_MAP = JSON.parse(process.env.DD_SERVICE_MAP || '{}')
 
 /*
 To scrub PII from your logs, uncomment the applicable configs below. If you'd like to scrub more than just
@@ -96,7 +97,7 @@ class EventhubLogForwarder {
   }
 
   formatLogAndSend(messageType, record) {
-    if (messageType == JSON_TYPE) {
+    if (messageType === JSON_TYPE) {
       record = this.addTagsToJsonLog(record);
     } else {
       record = this.addTagsToStringLog(record);
@@ -161,7 +162,7 @@ class EventhubLogForwarder {
   handleJSONArrayLogs(logs, logsType) {
     var promises = [];
     logs.forEach((message) => {
-      if (logsType == JSON_STRING_ARRAY) {
+      if (logsType === JSON_STRING_ARRAY) {
         try {
           message = JSON.parse(message);
         } catch (err) {
@@ -171,7 +172,7 @@ class EventhubLogForwarder {
         }
       }
       // If the message is a buffer object, the data type has been set to binary.
-      if (logsType == BUFFER_ARRAY) {
+      if (logsType === BUFFER_ARRAY) {
         try {
           message = JSON.parse(message.toString());
         } catch (err) {
@@ -180,7 +181,7 @@ class EventhubLogForwarder {
           return;
         }
       }
-      if (message.records != undefined) {
+      if (message.records !== undefined) {
         message.records.forEach((message) =>
             promises.push(this.formatLogAndSend(JSON_TYPE, message))
         );
@@ -243,7 +244,7 @@ class EventhubLogForwarder {
     var metadata = this.extractMetadataFromResource(record);
     record["ddsource"] = metadata.source || DD_SOURCE;
     record["ddsourcecategory"] = DD_SOURCE_CATEGORY;
-    record["service"] = metadata.service || DEFAULT_DD_SERVICE;
+    record["service"] = metadata.service;
     record["ddtags"] = metadata.tags
     .concat([
       DD_TAGS,
@@ -280,6 +281,11 @@ class EventhubLogForwarder {
     return sourceType.replace("microsoft.", "azure.");
   }
 
+  lookupService(resourceId) {
+    const serviceName = resourceId[resourceId.length - 1];
+    return DD_SERVICE_MAP[serviceName] || serviceName;
+  }
+
   extractMetadataFromResource(record) {
     var metadata = {tags: [], source: "", service: DEFAULT_DD_SERVICE};
     if (
@@ -294,7 +300,7 @@ class EventhubLogForwarder {
     if (resourceId[0] === "subscriptions") {
       if (resourceId.length > 1) {
         metadata.tags.push("subscription_id:" + resourceId[1]);
-        if (resourceId.length == 2) {
+        if (resourceId.length === 2) {
           metadata.source = "azure.subscription";
           return metadata;
         }
@@ -306,10 +312,10 @@ class EventhubLogForwarder {
           // service name will be the last part of resourceID
           // for checking resourceId of Azure Resources, use 'az resource list --name "myniceresource"' Azure CLI command:
           // https://docs.microsoft.com/de-de/cli/azure/resource?view=azure-cli-latest#az_resource_list
-          metadata.service = resourceId[resourceId.length - 1]
+          metadata.service = this.lookupService(resourceId);
         } else {
           metadata.tags.push("resource_group:" + resourceId[3]);
-          if (resourceId.length == 4) {
+          if (resourceId.length === 4) {
             metadata.source = "azure.resourcegroup";
             return metadata;
           }
@@ -320,7 +326,7 @@ class EventhubLogForwarder {
         // service name will be the last part of resourceID
         // for checking resourceId of Azure Resources, use 'az resource list --name "myniceresource"' Azure CLI command:
         // https://docs.microsoft.com/de-de/cli/azure/resource?view=azure-cli-latest#az_resource_list
-        metadata.service = resourceId[resourceId.length - 1]
+        metadata.service = this.lookupService(resourceId)
       }
     } else if (resourceId[0] === "tenants") {
       if (resourceId.length > 3 && resourceId[3]) {

@@ -431,6 +431,56 @@ describe("log-forwarder", () => {
       });
 
   test(
+      "extractMetadataFromResource: resource id is of subscriptions type and source is web app and service name has DD_SERVICE_MAP entry -> should add proper tags and source",
+      () => {
+        // given
+        process.env = Object.assign(process.env, {
+          DD_SERVICE_MAP: "{\"dummy-dev-cat-app\":\"cat-app\"}",
+        });
+        const logForwarder = require("../src/log-forwarder");
+        const forwarder = new logForwarder.forTests.EventhubLogForwarder();
+        const record = {
+          resourceId:
+              "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",
+        };
+        // when
+        const actual = forwarder.extractMetadataFromResource(record);
+        // then
+        expect(actual.tags.length).toBe(2);
+        expect(actual.tags[0]).toBe(
+            "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98"
+        );
+        expect(actual.tags[1]).toBe("resource_group:dummy-dev-rg");
+        expect(actual.source).toBe("azure.web");
+        expect(actual.service).toBe("cat-app")
+      });
+
+  test(
+      "extractMetadataFromResource: resource id is of subscriptions type and source is web app and service name has no DD_SERVICE_MAP entry -> should add proper tags and source",
+      () => {
+        // given
+        process.env = Object.assign(process.env, {
+          DD_SERVICE_MAP: "{\"some-other-cat-app\":\"cat-app\"}",
+        });
+        const logForwarder = require("../src/log-forwarder");
+        const forwarder = new logForwarder.forTests.EventhubLogForwarder();
+        const record = {
+          resourceId:
+              "/SUBSCRIPTIONS/F36E599D-8BF5-4F95-9740-A38A54EB6B98/RESOURCEGROUPS/DUMMY-DEV-RG/PROVIDERS/MICROSOFT.WEB/SITES/DUMMY-DEV-CAT-APP",
+        };
+        // when
+        const actual = forwarder.extractMetadataFromResource(record);
+        // then
+        expect(actual.tags.length).toBe(2);
+        expect(actual.tags[0]).toBe(
+            "subscription_id:f36e599d-8bf5-4f95-9740-a38a54eb6b98"
+        );
+        expect(actual.tags[1]).toBe("resource_group:dummy-dev-rg");
+        expect(actual.source).toBe("azure.web");
+        expect(actual.service).toBe("dummy-dev-cat-app")
+      });
+
+  test(
       "extractMetadataFromResource: source is direct the subscription -> should add proper tags and source",
       () => {
         // given

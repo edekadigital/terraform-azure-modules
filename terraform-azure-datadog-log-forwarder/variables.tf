@@ -25,6 +25,12 @@ variable "datadog_tags" {
   default     = {}
 }
 
+variable "datadog_service_map" {
+  description = "A map translating azure service names into datadog `service` tags"
+  type        = map(string)
+  default     = {}
+}
+
 variable "resource_location" {
   description = "Azure location to deploy all the things"
   type        = string
