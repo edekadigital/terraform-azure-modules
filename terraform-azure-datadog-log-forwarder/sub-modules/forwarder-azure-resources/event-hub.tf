@@ -1,3 +1,6 @@
+variable "eventhub_message_retention" {}
+variable "eventhub_partition_count" {}
+
 data "azurerm_eventhub_namespace_authorization_rule" "datadog" {
   name                = "RootManageSharedAccessKey"
   namespace_name      = azurerm_eventhub_namespace.datadog.name
@@ -13,6 +16,7 @@ resource "azurerm_eventhub_namespace" "datadog" {
   resource_group_name = azurerm_resource_group.datadog.name
   sku                 = "Basic"
   capacity            = 1
+  tags = var.az_resources_tags
 }
 
 resource "azurerm_eventhub" "datadog" {

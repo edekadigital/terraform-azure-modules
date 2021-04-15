@@ -61,7 +61,7 @@ jobs:
 
     - name: test module
       run: |
-        cd azure-datadog-log-forwarder
+        cd sub-modules/forwarder-azure-resources/azure-datadog-log-forwarder
         npm ci
         npm test
 

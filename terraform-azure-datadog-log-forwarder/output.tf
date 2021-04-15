@@ -1,7 +1,7 @@
 output "eventhub_authorization_rule_id" {
-  value = data.azurerm_eventhub_namespace_authorization_rule.datadog.id
+  value = module.az_backbone_resources.eventhub_authorization_rule_id
 }
 
 output "eventhub_name" {
-  value = azurerm_eventhub.datadog.name
+  value = module.az_backbone_resources.eventhub_name
 }

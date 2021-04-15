@@ -8,6 +8,12 @@ variable "datadog_api_key" {
   type        = string
 }
 
+variable "datadog_app_key" {
+  description = "App key for datadog. Used for datadog dashboard and monitors creation. Ignore, if no dashboard and monitors wanted."
+  type        = string
+  default     = ""
+}
+
 variable "subscription_id" {
   description = "Azure subscription id where all resources are gonna be deployed"
   type        = string
@@ -20,7 +26,7 @@ variable "datadog_site" {
 }
 
 variable "datadog_tags" {
-  description = "Tags to attach to all log messages"
+  description = "Tags to attach to all log messages and datadog monitors"
   type        = map(string)
   default     = {}
 }
@@ -29,6 +35,30 @@ variable "datadog_service_map" {
   description = "A map translating azure service names into datadog `service` tags"
   type        = map(string)
   default     = {}
+}
+
+variable "az_resources_tags" {
+  description = "Tags to attach to all created Azure Resources for Log Forwarder"
+  type        = map(string)
+  default     = {}
+}
+
+variable "datadog_resources_tags" {
+  description = "Tags to attach to all created Azure Resources for Log Forwarder"
+  type        = map(string)
+  default     = {}
+}
+
+variable "create_datadog_dashboard_and_monitors" {
+  description = "Conditional for creation of datadog dashboard and monitors for log forwarder backbone Azure resources"
+  type        = bool
+  default     = false
+}
+
+variable "datadog_monitors_notification_channel" {
+  description = "Channel name for datadog monitors notifications, f.E. MS Team Channel name. Ignore, if no dashboard and monitors wanted."
+  type        = string
+  default     = ""
 }
 
 variable "resource_location" {
