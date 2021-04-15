@@ -1,7 +1,13 @@
 data "archive_file" "app_code_datadog" {
   type        = "zip"
-  source_dir  = "${path.module}/azure-datadog-log-forwarder"
-  output_path = "${path.module}/azure-datadog-log-forwarder-${replace(timestamp(), ":", "")}.zip"
+  output_path = "${path.module}/build/azure-datadog-log-forwarder.zip"
+  dynamic "source" {
+    for_each = fileset("${path.module}/azure-datadog-log-forwarder/src", "*")
+    content {
+      filename = "azure-datadog-log-forwarder/${source.value}"
+      content  = file("${path.module}/azure-datadog-log-forwarder/src/${source.value}")
+    }
+  }
 }
 
 resource "azurerm_storage_account" "datadog" {
@@ -85,7 +91,7 @@ resource "azurerm_function_app" "datadog" {
     FUNCTIONS_WORKER_RUNTIME       = "node"
     WEBSITE_NODE_DEFAULT_VERSION   = "~12"
     FUNCTION_APP_EDIT_MODE         = "readonly"
-    HASH                           = filebase64sha256(data.archive_file.app_code_datadog.output_path)
+    HASH                           = data.archive_file.app_code_datadog.output_base64sha256
     WEBSITE_RUN_FROM_PACKAGE       = "https://${azurerm_storage_account.datadog.name}.blob.core.windows.net/${azurerm_storage_container.deployments_datadog.name}/${azurerm_storage_blob.app_code_datadog.name}${data.azurerm_storage_account_sas.sas_deploy_datadog.sas}"
     APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.datadog.instrumentation_key
 
@@ -111,15 +117,11 @@ resource "null_resource" "trigger_sync_datadog" {
   depends_on = [
   azurerm_function_app.datadog]
   triggers = {
-    always_run = timestamp()
+    on_update = data.archive_file.app_code_datadog.output_base64sha256
   }
 
   provisioner "local-exec" {
-    command = "curl -s -d '' https://${azurerm_function_app.datadog.default_hostname}/admin/host/synctriggers?code=$FUNC_APP_MASTER_KEY"
-
-    environment = {
-      FUNC_APP_MASTER_KEY = data.azurerm_function_app_host_keys.datadog.master_key
-    }
+    command = "curl -sf -d '' 'https://${azurerm_function_app.datadog.default_hostname}/admin/host/synctriggers?code=${data.azurerm_function_app_host_keys.datadog.master_key}'"
   }
 }
 
@@ -135,6 +137,7 @@ resource "azurerm_storage_blob" "app_code_datadog" {
   storage_container_name = azurerm_storage_container.deployments_datadog.name
   type                   = "Block"
   source                 = data.archive_file.app_code_datadog.output_path
+  content_md5            = data.archive_file.app_code_datadog.output_md5
   metadata = {
     sha = data.archive_file.app_code_datadog.output_sha
   }
