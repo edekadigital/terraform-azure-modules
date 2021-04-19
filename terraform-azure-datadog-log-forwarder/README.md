@@ -68,7 +68,7 @@ resource "azurerm_monitor_diagnostic_setting" "trigger_datadog" {
 
 # Architecture
 
-![Service Overview](azure-datadog-log-forwarder/azure-dd-log-forwarder.png)
+![Service Overview](docs/azure-dd-log-forwarder.png)
 
 # Details of Azure Infrastructure
 

@@ -10,5 +10,5 @@
       "consumerGroup": "$Default"
     }
   ],
-  "scriptFile": "log-forwarder.js"
+  "scriptFile": "../src/log-forwarder.js"
 }
