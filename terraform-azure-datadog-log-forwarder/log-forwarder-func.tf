@@ -1,13 +1,7 @@
 data "archive_file" "app_code_datadog" {
   type        = "zip"
-  output_path = "${path.module}/build/azure-datadog-log-forwarder.zip"
-  dynamic "source" {
-    for_each = fileset("${path.module}/azure-datadog-log-forwarder/src", "*")
-    content {
-      filename = "azure-datadog-log-forwarder/${source.value}"
-      content  = file("${path.module}/azure-datadog-log-forwarder/src/${source.value}")
-    }
-  }
+  source_dir  = "${path.module}/azure-datadog-log-forwarder"
+  output_path = "${path.module}/azure-datadog-log-forwarder.zip"
 }
 
 resource "azurerm_storage_account" "datadog" {
