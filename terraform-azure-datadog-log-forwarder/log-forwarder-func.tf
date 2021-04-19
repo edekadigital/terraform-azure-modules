@@ -2,6 +2,12 @@ data "archive_file" "app_code_datadog" {
   type        = "zip"
   source_dir  = "${path.module}/azure-datadog-log-forwarder"
   output_path = "${path.module}/azure-datadog-log-forwarder.zip"
+  excludes = [
+    "coverage",
+    "jest.config.js",
+    "node_modules",
+    "test",
+  ]
 }
 
 resource "azurerm_storage_account" "datadog" {
