@@ -7,3 +7,5 @@
 
 build/
 *.zip
+.terraform
+.terraform.lock.hcl

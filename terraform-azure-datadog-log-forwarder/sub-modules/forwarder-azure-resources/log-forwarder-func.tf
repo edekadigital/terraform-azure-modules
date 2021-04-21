@@ -1,9 +1,3 @@
-variable "datadog_api_key" {}
-variable "datadog_site" {}
-variable "datadog_tags" {}
-variable "datadog_service_map" {}
-variable "az_resources_tags" {}
-
 data "archive_file" "app_code_datadog" {
   type        = "zip"
   source_dir  = "${path.module}/azure-datadog-log-forwarder"
@@ -24,7 +18,7 @@ resource "azurerm_storage_account" "datadog" {
   account_replication_type  = "LRS"
   enable_https_traffic_only = true
 
-  tags = var.az_resources_tags
+  tags = var.azure_tags
 }
 
 data "azurerm_storage_account_sas" "sas_deploy_datadog" {
@@ -77,7 +71,7 @@ resource "azurerm_app_service_plan" "datadog" {
     size = "Y1"
   }
 
-  tags = var.az_resources_tags
+  tags = var.azure_tags
 }
 
 resource "azurerm_function_app" "datadog" {
@@ -112,7 +106,7 @@ resource "azurerm_function_app" "datadog" {
     DD_SERVICE_MAP              = jsonencode(var.datadog_service_map)
   }
 
-  tags = var.az_resources_tags
+  tags = var.azure_tags
 
   depends_on = [
   azurerm_app_service_plan.datadog]
@@ -123,7 +117,7 @@ resource "azurerm_application_insights" "datadog" {
   location            = var.resource_location
   resource_group_name = azurerm_resource_group.datadog.name
   application_type    = "Node.JS"
-  tags = var.az_resources_tags
+  tags                = var.azure_tags
 }
 
 resource "null_resource" "trigger_sync_datadog" {

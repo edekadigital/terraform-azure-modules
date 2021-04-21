@@ -1,8 +1,4 @@
-variable "create_datadog_dashboard_and_monitors" {}
-
 resource "datadog_dashboard" "log_forwarder_az_resources_dashboard" {
-  count = var.create_datadog_dashboard_and_monitors ? 1 : 0
-
   title        = "Log Forwarder Dashboard"
   description  = "Datadog dashboard providing main metrics for all backbone, Log Forwarder underlying Azure Resources"
   layout_type  = "ordered"
@@ -10,7 +6,7 @@ resource "datadog_dashboard" "log_forwarder_az_resources_dashboard" {
 
   template_variable {
     name    = "env"
-    default = "*"
+    default = var.datadog_dashboard_default_env
     prefix  = "env"
   }
 

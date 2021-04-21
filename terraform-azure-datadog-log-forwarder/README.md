@@ -3,23 +3,34 @@
 Forwarding logs received from eventhub to datadog.
 
 # Input variables to module
-* __resource_location__: default is _West Europe_
+* __resource_location__: default is `West Europe`
 * __project_name_as_resource_prefix__: project name as prefix for all created Azure Resources
 * __eventhub_message_retention__: retention for log events within Event Hub. Default is 1 day
 * __eventhub_partition_count__: partition count for Event Hub. Defaults to 4
-* __subscription_id__: id of Azure Subscription, where all Azure Resources should be build
 * __datadog_api_key__: target DD Api Key for forwarded logs
-* __datadog_tags__: custom datadog tags attached to all logs additionally to tags `subscription_id`, `resource_group` and `forwardername`. Also used to tag Log Forwarder's datadog monitors, if *create_datadog_dashboard_and_monitors = true*. Defaults to an empty map `{}`.
+* __datadog_app_key__: target DD App key for Log Forwarder observing datadog dashboard and monitors. Mandatory only, if `datadog_create_dashboard` or `datadog_create_monitors` is `true`. Otherwise, will be ignored.
+* __datadog_tags__: custom datadog tags attached to all logs additionally to tags `subscription_id`, `resource_group` and `forwardername`. Also used to tag Log Forwarder's datadog monitors, if `datadog_create_monitors = true`. Defaults to an empty map `{}`.
 * __datadog_site__: datadog site like (US/EU). Default id `datadoghq.eu`
 * __datadog_service_map__: a map translating azure service names into datadog `service` tags. Defaults to an empty map `{}`.
-* __create_datadog_dashboard_and_monitors__: conditional for creation / no creation of datadog dashboard and monitors for observing Log Forwarder backbone Azure Resources. Defaults to false.
-* __datadog_app_key__: target DD App key for Log Forwarder observing datadog dashboard and monitors. Set only, if create_datadog_dashboard_and_monitors = true. Otherwise will be ignored.
-* __datadog_monitors_notification_channel__: Channel name for Log Forwarder observing datadog monitors notifications, f.E. MS Team Channel name. Set only, if create_datadog_dashboard_and_monitors = true. Otherwise will be ignored.
-* __az_resources_tags__: Tags to attach to all created Azure Resources for Log Forwarder. Defaults to empty map. If *create_datadog_dashboard_and_monitors = true*, at least *env* tag with value must be provided to match with pre-configured *env* filter in the dashboard.
+* __datadog_create_dashboard__: create a datadog dashboard for log forwarder backbone Azure resources. Defaults to false.
+* __datadog_create_monitors__: create datadog monitors for log forwarder backbone Azure resources. Defaults to false.
+* __datadog_dashboard_default_env__: default env value shown in the dashboard. Defaults to `*`.
+* __datadog_monitors_function_executions_time__: time span definition for function execution monitor. Defaults to `last_1h`.
+* __datadog_monitors_function_executions_threshold__: threshold for minimal function executions. Defaults to `50`.
+* __datadog_monitors_notification_channel__: Channel name for Log Forwarder observing datadog monitors notifications, f.E. MS Team Channel name. Mandatory only, if `datadog_create_dashboard` or `datadog_create_monitors` is `true`. Otherwise, will be ignored.
+* __azure_tags__: Tags to attach to all created Azure Resources for Log Forwarder. Defaults to empty map. If `datadog_create_dashboard_and_monitors = true`, at least `env` tag with value must be provided to match with pre-configured `env` filter in the dashboard.
 
 _Example of usage:_
 
 ```terraform
+provider "azurerm" {
+  // ...
+}
+
+provider "datadog" {
+  // ...
+}
+
 module "datadog_log_forwarder" {
   source                          = "git::https://github.com/edekadigital/terraform-azure-modules.git//terraform-azure-datadog-log-forwarder?ref=v0.1.0"
   subscription_id                 = "mySubscriptionId"
@@ -34,10 +45,11 @@ module "datadog_log_forwarder" {
     some-azure-service-name = "service-1"
     some-other-service-name = "service-2"
   }
-  create_datadog_dashboard_and_monitors = true
+  datadog_create_dashboard              = true
+  datadog_create_monitors               = true
   datadog_app_key                       = "XYZ"
   datadog_monitors_notification_channel = "@teams-monitoring-proj"
-  az_resources_tags                     = {
+  azure_tags                     = {
     env = "dev"
     team  = "myTeam"
   }
@@ -103,15 +115,9 @@ resource "azurerm_monitor_diagnostic_setting" "trigger_datadog" {
 
 # Datadog Dashboard and Monitors for Log Forwarder's backbone Azure Infrastructure
 
-To observe Your Log Forwarder health and issues, You can optionally turn on datadog dashboard and monitors on per setting input variable *create_datadog_dashboard_and_monitors* to **true**.
-In this case, You must provide Your Datadog App Key and Notification Channel (f.e. MS Teams Channel name) per input variables 
-*datadog_app_key* and *datadog_monitors_notification_channel* correspondingly.
-
-Using *create_datadog_dashboard_and_monitors* from outside properly You can steer for example creation of one single datadog dashboard and monitors set
-for all Your log sources / Azure applications. This can be done by setting *create_datadog_dashboard_and_monitors* to **true** at the initial run
-of the module, and by setting *create_datadog_dashboard_and_monitors* to **false** for all subsequent calls of this module.
-If You want change some configuration of Your Log Forwarder's datadog dashboard and monitors (aka datadog app key or notification channel),
-or if You want recreate the dashboard and monitors, plese call this module with *create_datadog_dashboard_and_monitors* setted to **true**.
+To observe your Log Forwarder health and issues, you can optionally turn on datadog dashboard and monitors on per setting input variable `datadog_create_dashboard` and `datadog_create_monitors` to `true`.
+In this case, you must provide your Datadog App Key and Notification Channel (f.e. MS Teams Channel name) per input variables `datadog_app_key` and `datadog_monitors_notification_channel` correspondingly.
+You may want to deploy the dashboard only for one env/stage and monitors for all stages as the dashboard is providing information for all stages via drop down.
 
 Datadog dashboard includes:
 

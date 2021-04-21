@@ -14,11 +14,6 @@ variable "datadog_app_key" {
   default     = ""
 }
 
-variable "subscription_id" {
-  description = "Azure subscription id where all resources are gonna be deployed"
-  type        = string
-}
-
 variable "datadog_site" {
   description = "datadog site like (US/EU)"
   type        = string
@@ -37,7 +32,25 @@ variable "datadog_service_map" {
   default     = {}
 }
 
-variable "az_resources_tags" {
+variable "datadog_dashboard_default_env" {
+  description = "Default env value shown in the dashboard"
+  type        = string
+  default     = "*"
+}
+
+variable "datadog_monitors_function_executions_time" {
+  description = "Time span definition for function execution monitor"
+  type        = string
+  default     = "last_1h"
+}
+
+variable "datadog_monitors_function_executions_threshold" {
+  description = "Threshold for minimal function executions"
+  type        = number
+  default     = 50
+}
+
+variable "azure_tags" {
   description = "Tags to attach to all created Azure Resources for Log Forwarder"
   type        = map(string)
   default     = {}
@@ -49,8 +62,14 @@ variable "datadog_resources_tags" {
   default     = {}
 }
 
-variable "create_datadog_dashboard_and_monitors" {
-  description = "Conditional for creation of datadog dashboard and monitors for log forwarder backbone Azure resources"
+variable "datadog_create_dashboard" {
+  description = "Create a datadog dashboard for log forwarder backbone Azure resources"
+  type        = bool
+  default     = false
+}
+
+variable "datadog_create_monitors" {
+  description = "Create datadog monitors for log forwarder backbone Azure resources"
   type        = bool
   default     = false
 }
