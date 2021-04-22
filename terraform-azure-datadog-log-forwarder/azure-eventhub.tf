@@ -13,6 +13,7 @@ resource "azurerm_eventhub_namespace" "datadog" {
   resource_group_name = azurerm_resource_group.datadog.name
   sku                 = "Basic"
   capacity            = 1
+  tags                = var.azure_tags
 }
 
 resource "azurerm_eventhub" "datadog" {

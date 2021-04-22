@@ -1,7 +1,7 @@
 data "archive_file" "app_code_datadog" {
   type        = "zip"
-  source_dir  = "${path.module}/azure-datadog-log-forwarder"
-  output_path = "${path.module}/azure-datadog-log-forwarder.zip"
+  source_dir  = "${path.module}/log-forwarder"
+  output_path = "${path.module}/log-forwarder.zip"
   excludes = [
     "coverage",
     "jest.config.js",
@@ -17,6 +17,8 @@ resource "azurerm_storage_account" "datadog" {
   account_tier              = "Standard"
   account_replication_type  = "LRS"
   enable_https_traffic_only = true
+
+  tags = var.azure_tags
 }
 
 data "azurerm_storage_account_sas" "sas_deploy_datadog" {
@@ -68,6 +70,8 @@ resource "azurerm_app_service_plan" "datadog" {
     tier = "Dynamic"
     size = "Y1"
   }
+
+  tags = var.azure_tags
 }
 
 resource "azurerm_function_app" "datadog" {
@@ -98,9 +102,11 @@ resource "azurerm_function_app" "datadog" {
     DD_API_KEY                  = var.datadog_api_key
     DD_SITE                     = var.datadog_site
     DATADOG_EVENTHUB_CONNECTION = "${azurerm_eventhub_namespace.datadog.default_primary_connection_string};EntityPath=datadog"
-    DD_TAGS                     = join(",", [for k, v in var.datadog_tags : "${k}:${v}"])
+    DD_TAGS                     = join(",", local.datadog_tags)
     DD_SERVICE_MAP              = jsonencode(var.datadog_service_map)
   }
+
+  tags = var.azure_tags
 
   depends_on = [
   azurerm_app_service_plan.datadog]
@@ -111,6 +117,7 @@ resource "azurerm_application_insights" "datadog" {
   location            = var.resource_location
   resource_group_name = azurerm_resource_group.datadog.name
   application_type    = "Node.JS"
+  tags                = var.azure_tags
 }
 
 resource "null_resource" "trigger_sync_datadog" {

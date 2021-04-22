@@ -33,6 +33,10 @@ jobs:
       with:
         terraform_version: 0.14.7
 
+    # Copy test provider definition
+    - name: Copy test providers
+      run: cp ../test/*.tf .
+
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       run: terraform init
@@ -61,7 +65,7 @@ jobs:
 
     - name: test module
       run: |
-        cd azure-datadog-log-forwarder
+        cd log-forwarder
         npm ci
         npm test
 
