@@ -97,3 +97,7 @@ variable "eventhub_partition_count" {
   type        = number
   default     = 4
 }
+
+locals {
+  datadog_tags = [for k, v in var.datadog_tags : "${k}:${v}"]
+}

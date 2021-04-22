@@ -1,4 +1,6 @@
 resource "datadog_dashboard" "log_forwarder_az_resources_dashboard" {
+  count = var.datadog_create_dashboard ? 1 : 0
+
   title        = "Log Forwarder Dashboard"
   description  = "Datadog dashboard providing main metrics for all backbone, Log Forwarder underlying Azure Resources"
   layout_type  = "ordered"

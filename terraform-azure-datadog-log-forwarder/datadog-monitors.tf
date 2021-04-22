@@ -1,6 +1,6 @@
-
-
 resource "datadog_monitor" "event-hub-errors" {
+  count = var.datadog_create_monitors ? 1 : 0
+
   name               = "DD Log Forwarder Event Hub Errors"
   type               = "query alert"
   message            = "{{#is_alert}}Event Hub for Datadog Log Forwarder throws server or / and user errors .{{/is_alert}}{{#is_recovery}}Event Hub for Datadog Log Forwarder don't throw server / or user errors now.{{/is_recovery}} ${var.datadog_monitors_notification_channel}"
@@ -31,6 +31,8 @@ resource "datadog_monitor" "event-hub-errors" {
 }
 
 resource "datadog_monitor" "event-hub-healthcheck" {
+  count = var.datadog_create_monitors ? 1 : 0
+
   name               = "DD Log Forwarder Event Hub Healthcheck"
   type               = "query alert"
   message            = "{{#is_alert}}Event Hub for Datadog Log Forwarder not accessible.{{/is_alert}}{{#is_recovery}}Event Hub for Datadog Log Forwarder accessible now.{{/is_recovery}} ${var.datadog_monitors_notification_channel}"
@@ -61,6 +63,8 @@ resource "datadog_monitor" "event-hub-healthcheck" {
 }
 
 resource "datadog_monitor" "event-hub-quotas" {
+  count = var.datadog_create_monitors ? 1 : 0
+
   name               = "DD Log Forwarder Event Hub Quotas"
   type               = "query alert"
   message            = "{{#is_alert}}Event Hub for Datadog Log Forwarder quotas are exceeded.{{/is_alert}}{{#is_recovery}}Event Hub for Datadog Log Forwarder quotas are OK.{{/is_recovery}} ${var.datadog_monitors_notification_channel}"
@@ -92,6 +96,8 @@ resource "datadog_monitor" "event-hub-quotas" {
 }
 
 resource "datadog_monitor" "event-hub-throttling" {
+  count = var.datadog_create_monitors ? 1 : 0
+
   name               = "DD Log Forwarder Event Hub Throttling"
   type               = "query alert"
   message            = "{{#is_alert}}Event Hub for Datadog Log Forwarder was throttled.{{/is_alert}}{{#is_recovery}}Event Hub for Datadog Log Forwarder throttling recovered.{{/is_recovery}} ${var.datadog_monitors_notification_channel}"
@@ -122,6 +128,8 @@ resource "datadog_monitor" "event-hub-throttling" {
 }
 
 resource "datadog_monitor" "storage-account-healthcheck" {
+  count = var.datadog_create_monitors ? 1 : 0
+
   name               = "DD Log Forwarder Storage Account Healthcheck"
   type               = "query alert"
   message            = "{{#is_alert}}Storage Account for Datadog Log Forwarder not accessible.{{/is_alert}}{{#is_recovery}}Storage Account for Datadog Log Forwarder accessible now.{{/is_recovery}} ${var.datadog_monitors_notification_channel}"
@@ -152,6 +160,8 @@ resource "datadog_monitor" "storage-account-healthcheck" {
 }
 
 resource "datadog_monitor" "func-errors" {
+  count = var.datadog_create_monitors ? 1 : 0
+
   name               = "DD Log Forwarder Function Errors"
   type               = "query alert"
   message            = "{{#is_alert}}Function for Datadog Log Forwarder throws client- or / and serverside errors .{{/is_alert}}{{#is_recovery}}Function for Datadog Log Forwarder don't throw client- or / and serverside errors now.{{/is_recovery}} ${var.datadog_monitors_notification_channel}"
@@ -182,6 +192,8 @@ resource "datadog_monitor" "func-errors" {
 }
 
 resource "datadog_monitor" "func-executions" {
+  count = var.datadog_create_monitors ? 1 : 0
+
   name               = "DD Log Forwarder Function Executions"
   type               = "query alert"
   message            = "{{#is_alert}}Function for Datadog Log Forwarder has suspicious few executions .{{/is_alert}}{{#is_recovery}}Function for Datadog Log Forwarder execution rate OK.{{/is_recovery}} ${var.datadog_monitors_notification_channel}"

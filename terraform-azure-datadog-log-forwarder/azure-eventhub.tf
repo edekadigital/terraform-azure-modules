@@ -1,6 +1,3 @@
-variable "eventhub_message_retention" {}
-variable "eventhub_partition_count" {}
-
 data "azurerm_eventhub_namespace_authorization_rule" "datadog" {
   name                = "RootManageSharedAccessKey"
   namespace_name      = azurerm_eventhub_namespace.datadog.name

@@ -1,7 +1,7 @@
 data "archive_file" "app_code_datadog" {
   type        = "zip"
-  source_dir  = "${path.module}/azure-datadog-log-forwarder"
-  output_path = "${path.module}/azure-datadog-log-forwarder.zip"
+  source_dir  = "${path.module}/log-forwarder"
+  output_path = "${path.module}/log-forwarder.zip"
   excludes = [
     "coverage",
     "jest.config.js",
@@ -102,7 +102,7 @@ resource "azurerm_function_app" "datadog" {
     DD_API_KEY                  = var.datadog_api_key
     DD_SITE                     = var.datadog_site
     DATADOG_EVENTHUB_CONNECTION = "${azurerm_eventhub_namespace.datadog.default_primary_connection_string};EntityPath=datadog"
-    DD_TAGS                     = join(",", [for k, v in var.datadog_tags : "${k}:${v}"])
+    DD_TAGS                     = join(",", local.datadog_tags)
     DD_SERVICE_MAP              = jsonencode(var.datadog_service_map)
   }
 
