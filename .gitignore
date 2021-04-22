@@ -9,3 +9,5 @@ build/
 *.zip
 .terraform
 .terraform.lock.hcl
+providers.tf
+!test/providers.tf
