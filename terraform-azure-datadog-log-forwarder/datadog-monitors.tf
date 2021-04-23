@@ -27,7 +27,7 @@ resource "datadog_monitor" "event-hub-errors" {
     ignore_changes = [silenced]
   }
 
-  tags = concat(local.datadog_tags, ["${var.datadog_tag_name_kind}:event-hub"])
+  tags = concat(local.datadog_tags, local.datadog_monitors_tags, ["${var.datadog_tag_name_kind}:event-hub"])
 }
 
 resource "datadog_monitor" "event-hub-healthcheck" {
@@ -59,7 +59,7 @@ resource "datadog_monitor" "event-hub-healthcheck" {
     ignore_changes = [silenced]
   }
 
-  tags = concat(local.datadog_tags, ["${var.datadog_tag_name_kind}:event-hub"])
+  tags = concat(local.datadog_tags, local.datadog_monitors_tags, ["${var.datadog_tag_name_kind}:event-hub"])
 }
 
 resource "datadog_monitor" "event-hub-quotas" {
@@ -92,7 +92,7 @@ resource "datadog_monitor" "event-hub-quotas" {
     ignore_changes = [silenced]
   }
 
-  tags = concat(local.datadog_tags, ["${var.datadog_tag_name_kind}:event-hub"])
+  tags = concat(local.datadog_tags, local.datadog_monitors_tags, ["${var.datadog_tag_name_kind}:event-hub"])
 }
 
 resource "datadog_monitor" "event-hub-throttling" {
@@ -124,7 +124,7 @@ resource "datadog_monitor" "event-hub-throttling" {
     ignore_changes = [silenced]
   }
 
-  tags = concat(local.datadog_tags, ["${var.datadog_tag_name_kind}:event-hub"])
+  tags = concat(local.datadog_tags, local.datadog_monitors_tags, ["${var.datadog_tag_name_kind}:event-hub"])
 }
 
 resource "datadog_monitor" "storage-account-healthcheck" {
@@ -156,7 +156,7 @@ resource "datadog_monitor" "storage-account-healthcheck" {
     ignore_changes = [silenced]
   }
 
-  tags = concat(local.datadog_tags, ["${var.datadog_tag_name_kind}:storage"])
+  tags = concat(local.datadog_tags, local.datadog_monitors_tags, ["${var.datadog_tag_name_kind}:storage"])
 }
 
 resource "datadog_monitor" "func-errors" {
@@ -188,7 +188,7 @@ resource "datadog_monitor" "func-errors" {
     ignore_changes = [silenced]
   }
 
-  tags = concat(local.datadog_tags, ["${var.datadog_tag_name_kind}:function"])
+  tags = concat(local.datadog_tags, local.datadog_monitors_tags, ["${var.datadog_tag_name_kind}:function"])
 }
 
 resource "datadog_monitor" "func-executions" {
@@ -221,5 +221,5 @@ resource "datadog_monitor" "func-executions" {
     ignore_changes = [silenced]
   }
 
-  tags = concat(local.datadog_tags, ["${var.datadog_tag_name_kind}:function"])
+  tags = concat(local.datadog_tags, local.datadog_monitors_tags, ["${var.datadog_tag_name_kind}:function"])
 }

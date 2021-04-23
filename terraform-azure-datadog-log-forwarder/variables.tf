@@ -56,6 +56,14 @@ variable "datadog_monitors_priority" {
   default     = 2
 }
 
+variable "datadog_monitors_tags" {
+  description = "Additional tags to attach to monitors"
+  type        = map(string)
+  default = {
+    service = "log-forwarder"
+  }
+}
+
 variable "datadog_tag_name_kind" {
   description = "Tag name for the `kind` tag."
   type        = string
@@ -111,5 +119,6 @@ variable "eventhub_partition_count" {
 }
 
 locals {
-  datadog_tags = [for k, v in var.datadog_tags : "${k}:${v}"]
+  datadog_tags          = [for k, v in var.datadog_tags : "${k}:${v}"]
+  datadog_monitors_tags = [for k, v in var.datadog_monitors_tags : "${k}:${v}"]
 }
