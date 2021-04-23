@@ -103,7 +103,7 @@ resource "datadog_monitor" "event-hub-throttling" {
   message            = "{{#is_alert}}Event Hub for Datadog Log Forwarder was throttled.{{/is_alert}}{{#is_recovery}}Event Hub for Datadog Log Forwarder throttling recovered.{{/is_recovery}} ${var.datadog_monitors_notification_channel}"
   escalation_message = "{{#is_alert}}Event Hub for Datadog Log Forwarder still throttled.{{/is_alert}}{{#is_recovery}}Event Hub for Datadog Log Forwarder throttling recovered.{{/is_recovery}} ${var.datadog_monitors_notification_channel}"
 
-  query = "sum(last_1h):sum:azure.eventhub_namespaces.throttled_requests.{name:${azurerm_eventhub_namespace.datadog.name}.as_count() > 5"
+  query = "sum(last_1h):sum:azure.eventhub_namespaces.throttled_requests.{name:${azurerm_eventhub_namespace.datadog.name}}.as_count() > 5"
 
   monitor_thresholds {
     critical          = 5
@@ -135,7 +135,7 @@ resource "datadog_monitor" "storage-account-healthcheck" {
   message            = "{{#is_alert}}Storage Account for Datadog Log Forwarder not accessible.{{/is_alert}}{{#is_recovery}}Storage Account for Datadog Log Forwarder accessible now.{{/is_recovery}} ${var.datadog_monitors_notification_channel}"
   escalation_message = "{{#is_alert}}Storage Account for Datadog Log Forwarder still not accessible.{{/is_alert}}{{#is_recovery}}Storage Account for Datadog Log Forwarder accessible now.{{/is_recovery}} ${var.datadog_monitors_notification_channel}"
 
-  query = "max(last_1h):sum:azure.storage_storageaccounts_blobservices.availability{name:${azurerm_storage_account.datadog.name} < 1"
+  query = "max(last_1h):sum:azure.storage_storageaccounts_blobservices.availability{name:${azurerm_storage_account.datadog.name}} < 1"
 
   monitor_thresholds {
     critical = 1
@@ -199,7 +199,7 @@ resource "datadog_monitor" "func-executions" {
   message            = "{{#is_alert}}Function for Datadog Log Forwarder has suspicious few executions .{{/is_alert}}{{#is_recovery}}Function for Datadog Log Forwarder execution rate OK.{{/is_recovery}} ${var.datadog_monitors_notification_channel}"
   escalation_message = "{{#is_alert}}Function for Datadog Log Forwarder still has suspicious few executions .{{/is_alert}}{{#is_recovery}}Function for Datadog Log Forwarder execution rate OK.{{/is_recovery}} ${var.datadog_monitors_notification_channel}"
 
-  query = "sum(${var.datadog_monitors_function_executions_time}):sum:azure.functions.function_execution_count{name:${azurerm_function_app.datadog.name}.as_count() < ${var.datadog_monitors_function_executions_threshold}"
+  query = "sum(${var.datadog_monitors_function_executions_time}):sum:azure.functions.function_execution_count{name:${azurerm_function_app.datadog.name}}.as_count() < ${var.datadog_monitors_function_executions_threshold}"
 
   monitor_thresholds {
     critical          = var.datadog_monitors_function_executions_threshold
