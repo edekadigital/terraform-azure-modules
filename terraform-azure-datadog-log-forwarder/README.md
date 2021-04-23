@@ -10,6 +10,7 @@ Forwarding logs received from eventhub to datadog.
 * __datadog_api_key__: target DD Api Key for forwarded logs
 * __datadog_app_key__: target DD App key for Log Forwarder observing datadog dashboard and monitors. Mandatory only, if `datadog_create_dashboard` or `datadog_create_monitors` is `true`. Otherwise, will be ignored.
 * __datadog_tags__: custom datadog tags attached to all logs additionally to tags `subscription_id`, `resource_group` and `forwardername`. Also used to tag Log Forwarder's datadog monitors, if `datadog_create_monitors = true`. Defaults to an empty map `{}`.
+* __datadog_tag_name_kind__: Tag name for the `kind` tag. Defaults to `kind`.
 * __datadog_site__: datadog site like (US/EU). Default id `datadoghq.eu`
 * __datadog_service_map__: a map translating azure service names into datadog `service` tags. Defaults to an empty map `{}`.
 * __datadog_create_dashboard__: create a datadog dashboard for log forwarder backbone Azure resources. Defaults to false.
@@ -18,6 +19,7 @@ Forwarding logs received from eventhub to datadog.
 * __datadog_monitors_function_executions_time__: time span definition for function execution monitor. Defaults to `last_1h`.
 * __datadog_monitors_function_executions_threshold__: threshold for minimal function executions. Defaults to `50`.
 * __datadog_monitors_notification_channel__: Channel name for Log Forwarder observing datadog monitors notifications, f.E. MS Team Channel name. Mandatory only, if `datadog_create_dashboard` or `datadog_create_monitors` is `true`. Otherwise, will be ignored.
+* __datadog_monitors_priority__: Priority of monitors in datadog. Defaults to `2`.
 * __azure_tags__: Tags to attach to all created Azure Resources for Log Forwarder. Defaults to empty map. If `datadog_create_dashboard_and_monitors = true`, at least `env` tag with value must be provided to match with pre-configured `env` filter in the dashboard.
 
 _Example of usage:_

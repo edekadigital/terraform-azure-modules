@@ -13,7 +13,7 @@ resource "datadog_monitor" "event-hub-errors" {
     critical_recovery = 0
   }
 
-  priority            = 2
+  priority            = var.datadog_monitors_priority
   require_full_window = true
   notify_no_data      = false
   renotify_interval   = 0
@@ -27,7 +27,7 @@ resource "datadog_monitor" "event-hub-errors" {
     ignore_changes = [silenced]
   }
 
-  tags = concat(local.datadog_tags, ["event-hub"])
+  tags = concat(local.datadog_tags, ["${var.datadog_tag_name_kind}:event-hub"])
 }
 
 resource "datadog_monitor" "event-hub-healthcheck" {
@@ -44,7 +44,7 @@ resource "datadog_monitor" "event-hub-healthcheck" {
     critical = 1
   }
 
-  priority            = 2
+  priority            = var.datadog_monitors_priority
   require_full_window = true
   notify_no_data      = true
   no_data_timeframe   = 120
@@ -59,7 +59,7 @@ resource "datadog_monitor" "event-hub-healthcheck" {
     ignore_changes = [silenced]
   }
 
-  tags = concat(local.datadog_tags, ["event-hub"])
+  tags = concat(local.datadog_tags, ["${var.datadog_tag_name_kind}:event-hub"])
 }
 
 resource "datadog_monitor" "event-hub-quotas" {
@@ -77,7 +77,7 @@ resource "datadog_monitor" "event-hub-quotas" {
     critical_recovery = 0
   }
 
-  priority            = 2
+  priority            = var.datadog_monitors_priority
   require_full_window = true
   notify_no_data      = true
   no_data_timeframe   = 120
@@ -92,7 +92,7 @@ resource "datadog_monitor" "event-hub-quotas" {
     ignore_changes = [silenced]
   }
 
-  tags = concat(local.datadog_tags, ["event-hub"])
+  tags = concat(local.datadog_tags, ["${var.datadog_tag_name_kind}:event-hub"])
 }
 
 resource "datadog_monitor" "event-hub-throttling" {
@@ -110,7 +110,7 @@ resource "datadog_monitor" "event-hub-throttling" {
     critical_recovery = 0
   }
 
-  priority            = 2
+  priority            = var.datadog_monitors_priority
   require_full_window = true
   notify_no_data      = false
   renotify_interval   = 60
@@ -124,7 +124,7 @@ resource "datadog_monitor" "event-hub-throttling" {
     ignore_changes = [silenced]
   }
 
-  tags = concat(local.datadog_tags, ["event-hub"])
+  tags = concat(local.datadog_tags, ["${var.datadog_tag_name_kind}:event-hub"])
 }
 
 resource "datadog_monitor" "storage-account-healthcheck" {
@@ -141,7 +141,7 @@ resource "datadog_monitor" "storage-account-healthcheck" {
     critical = 1
   }
 
-  priority            = 2
+  priority            = var.datadog_monitors_priority
   require_full_window = true
   notify_no_data      = true
   no_data_timeframe   = 120
@@ -156,7 +156,7 @@ resource "datadog_monitor" "storage-account-healthcheck" {
     ignore_changes = [silenced]
   }
 
-  tags = concat(local.datadog_tags, ["storage"])
+  tags = concat(local.datadog_tags, ["${var.datadog_tag_name_kind}:storage"])
 }
 
 resource "datadog_monitor" "func-errors" {
@@ -174,7 +174,7 @@ resource "datadog_monitor" "func-errors" {
     critical_recovery = 0
   }
 
-  priority            = 2
+  priority            = var.datadog_monitors_priority
   require_full_window = true
   notify_no_data      = false
   renotify_interval   = 0
@@ -188,7 +188,7 @@ resource "datadog_monitor" "func-errors" {
     ignore_changes = [silenced]
   }
 
-  tags = concat(local.datadog_tags, ["function"])
+  tags = concat(local.datadog_tags, ["${var.datadog_tag_name_kind}:function"])
 }
 
 resource "datadog_monitor" "func-executions" {
@@ -206,7 +206,7 @@ resource "datadog_monitor" "func-executions" {
     critical_recovery = var.datadog_monitors_function_executions_threshold + 1
   }
 
-  priority            = 2
+  priority            = var.datadog_monitors_priority
   require_full_window = true
   notify_no_data      = true
   no_data_timeframe   = 120
@@ -221,5 +221,5 @@ resource "datadog_monitor" "func-executions" {
     ignore_changes = [silenced]
   }
 
-  tags = concat(local.datadog_tags, ["function"])
+  tags = concat(local.datadog_tags, ["${var.datadog_tag_name_kind}:function"])
 }

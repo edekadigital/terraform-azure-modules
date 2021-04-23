@@ -50,6 +50,18 @@ variable "datadog_monitors_function_executions_threshold" {
   default     = 50
 }
 
+variable "datadog_monitors_priority" {
+  description = "Priority of monitors in datadog"
+  type        = number
+  default     = 2
+}
+
+variable "datadog_tag_name_kind" {
+  description = "Tag name for the `kind` tag."
+  type        = string
+  default     = "kind"
+}
+
 variable "azure_tags" {
   description = "Tags to attach to all created Azure Resources for Log Forwarder"
   type        = map(string)
