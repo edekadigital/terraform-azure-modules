@@ -21,7 +21,7 @@ Forwarding logs received from eventhub to datadog.
 * __datadog_monitors_notification_channel__: Channel name for Log Forwarder observing datadog monitors notifications, f.E. MS Team Channel name. Mandatory only, if `datadog_create_dashboard` or `datadog_create_monitors` is `true`. Otherwise, will be ignored.
 * __datadog_monitors_priority__: Priority of monitors in datadog. Defaults to `2`.
 * __datadog_monitors_tags__: Additional tags to attach to monitors. Defaults to `{service = "log-forwarder"}`.  
-* __azure_tags__: Tags to attach to all created Azure Resources for Log Forwarder. Defaults to empty map. If `datadog_create_dashboard_and_monitors = true`, at least `env` tag with value must be provided to match with pre-configured `env` filter in the dashboard.
+* __azure_tags__: Tags to attach to all created Azure Resources for Log Forwarder. Defaults to empty map. If `datadog_create_dashboard = true`, at least `env` tag with value must be provided to match with pre-configured `env` filter in the dashboard.
 
 _Example of usage:_
 
