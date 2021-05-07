@@ -8,7 +8,6 @@ Forwarding logs received from eventhub to datadog.
 * __eventhub_message_retention__: retention for log events within Event Hub. Default is 1 day
 * __eventhub_partition_count__: partition count for Event Hub. Defaults to 4
 * __datadog_api_key__: target DD Api Key for forwarded logs
-* __datadog_app_key__: target DD App key for Log Forwarder observing datadog dashboard and monitors. Mandatory only, if `datadog_create_dashboard` or `datadog_create_monitors` is `true`. Otherwise, will be ignored.
 * __datadog_tags__: custom datadog tags attached to all logs additionally to tags `subscription_id`, `resource_group` and `forwardername`. Also used to tag Log Forwarder's datadog monitors, if `datadog_create_monitors = true`. Defaults to an empty map `{}`.
 * __datadog_tag_name_kind__: Tag name for the `kind` tag. Defaults to `kind`.
 * __datadog_site__: datadog site like (US/EU). Default id `datadoghq.eu`
@@ -36,7 +35,6 @@ provider "datadog" {
 
 module "datadog_log_forwarder" {
   source                          = "git::https://github.com/edekadigital/terraform-azure-modules.git//terraform-azure-datadog-log-forwarder?ref=v0.1.0"
-  subscription_id                 = "mySubscriptionId"
   project_name_as_resource_prefix = "myProject-dev"
   datadog_api_key                 = "XYZ"
   datadog_tags                    = { 
@@ -50,7 +48,6 @@ module "datadog_log_forwarder" {
   }
   datadog_create_dashboard              = true
   datadog_create_monitors               = true
-  datadog_app_key                       = "XYZ"
   datadog_monitors_notification_channel = "@teams-monitoring-proj"
   azure_tags                     = {
     env = "dev"
@@ -119,7 +116,7 @@ resource "azurerm_monitor_diagnostic_setting" "trigger_datadog" {
 # Datadog Dashboard and Monitors for Log Forwarder's backbone Azure Infrastructure
 
 To observe your Log Forwarder health and issues, you can optionally turn on datadog dashboard and monitors on per setting input variable `datadog_create_dashboard` and `datadog_create_monitors` to `true`.
-In this case, you must provide your Datadog App Key and Notification Channel (f.e. MS Teams Channel name) per input variables `datadog_app_key` and `datadog_monitors_notification_channel` correspondingly.
+In this case, you can provide Notification Channel (f.e. MS Teams Channel name) per input variable `datadog_monitors_notification_channel`.
 You may want to deploy the dashboard only for one env/stage and monitors for all stages as the dashboard is providing information for all stages via drop down.
 
 Datadog dashboard includes:

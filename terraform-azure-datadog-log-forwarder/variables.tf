@@ -8,12 +8,6 @@ variable "datadog_api_key" {
   type        = string
 }
 
-variable "datadog_app_key" {
-  description = "App key for datadog. Used for datadog dashboard and monitors creation. Ignore, if no dashboard and monitors wanted."
-  type        = string
-  default     = ""
-}
-
 variable "datadog_site" {
   description = "datadog site like (US/EU)"
   type        = string
