@@ -11,3 +11,6 @@ build/
 .terraform.lock.hcl
 providers.tf
 !test/providers.tf
+
+terraform.tfstate
+terraform.tfstate.backup
