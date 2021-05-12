@@ -17,6 +17,7 @@ variable "sftp_user_name" {
 variable "sftp_password" {
   description = "sftp pass"
   type        = string
+  sensitive   = true
 }
 
 variable "sftp_quota" {
