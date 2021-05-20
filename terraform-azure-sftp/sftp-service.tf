@@ -19,6 +19,17 @@ resource "azurerm_container_group" "sftp" {
       protocol = "TCP"
     }
 
+    # https://github.com/atmoz/sftp#providing-your-own-ssh-host-key-recommended
+    volume {
+      name       = "ssh_host_keys"
+      mount_path = "/etc/ssh"
+      read_only  = true
+      secret = {
+        ssh_host_ed25519_key = var.ssh_host_ed25519_key,
+        ssh_host_rsa_key     = var.ssh_host_rsa_key
+      }
+    }
+
     volume {
       name                 = "sftpvolume"
       mount_path           = "/home/${var.sftp_user_name}/${local.sftp_folder}"

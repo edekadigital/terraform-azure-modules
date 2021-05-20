@@ -34,3 +34,15 @@ variable "azure_tags" {
 locals {
   sftp_folder = "sftp"
 }
+
+variable "ssh_host_ed25519_key" {
+  description = "your own generated ssh_host_ed25519_key"
+  type        = string
+  sensitive   = true
+}
+
+variable "ssh_host_rsa_key" {
+  description = "your own generated ssh_host_rsa_key"
+  type        = string
+  sensitive   = true
+}
