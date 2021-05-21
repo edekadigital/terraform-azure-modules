@@ -23,10 +23,28 @@ resource "azurerm_container_group" "sftp" {
     volume {
       name       = "ssh-host-keys"
       mount_path = "/etc/ssh"
-      read_only  = true
+      read_only  = false
       secret = {
+        sshd_config = base64encode(templatefile(
+          "${path.module}/templates/sshd_config.tmpl",
+          {
+            host_keys = ["ssh_host_ed25519_key", "ssh_host_rsa_key"]
+          }
+        )),
         ssh_host_ed25519_key = var.ssh_host_ed25519_key,
         ssh_host_rsa_key     = var.ssh_host_rsa_key
+      }
+    }
+
+    volume {
+      name       = "bootscripts"
+      mount_path = "/etc/sftp.d"
+      read_only  = false
+      secret = {
+        sshd_config = base64encode(templatefile(
+          "${path.module}/templates/bootstrap.sh.tmpl",
+          {}
+        ))
       }
     }
 
