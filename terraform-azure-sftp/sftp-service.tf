@@ -21,7 +21,7 @@ resource "azurerm_container_group" "sftp" {
 
     # https://github.com/atmoz/sftp#providing-your-own-ssh-host-key-recommended
     volume {
-      name       = "ssh_host_keys"
+      name       = "ssh-host-keys"
       mount_path = "/etc/ssh"
       read_only  = true
       secret = {
