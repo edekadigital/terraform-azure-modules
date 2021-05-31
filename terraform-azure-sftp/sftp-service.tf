@@ -7,7 +7,7 @@ resource "azurerm_container_group" "sftp" {
   os_type             = "linux"
   container {
     name   = "sftp-source"
-    image  = "atmoz/sftp:latest"
+    image  = "selamanse/sftp:latest"
     cpu    = "1"
     memory = "1.5"
     environment_variables = {
@@ -21,9 +21,8 @@ resource "azurerm_container_group" "sftp" {
 
     # https://github.com/atmoz/sftp#providing-your-own-ssh-host-key-recommended
     volume {
-      name       = "ssh-host-keys"
-      mount_path = "/etc/ssh"
-      read_only  = false
+      name       = "ssh-config-files"
+      mount_path = "/ssh-config-files"
       secret = {
         sshd_config = base64encode(templatefile(
           "${path.module}/templates/sshd_config.tmpl",
@@ -39,9 +38,8 @@ resource "azurerm_container_group" "sftp" {
     volume {
       name       = "bootscripts"
       mount_path = "/etc/sftp.d"
-      read_only  = false
       secret = {
-        sshd_config = base64encode(templatefile(
+        "bootstrap.sh" = base64encode(templatefile(
           "${path.module}/templates/bootstrap.sh.tmpl",
           {}
         ))
