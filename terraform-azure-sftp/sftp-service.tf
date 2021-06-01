@@ -2,9 +2,9 @@ resource "azurerm_container_group" "sftp" {
   name                = "${var.prefix}-continst"
   location            = azurerm_resource_group.sftp.location
   resource_group_name = azurerm_resource_group.sftp.name
-  ip_address_type     = "public"
+  ip_address_type     = "Public"
   dns_name_label      = "${var.prefix}-continst"
-  os_type             = "linux"
+  os_type             = "Linux"
   container {
     name   = "sftp-source"
     image  = "selamanse/sftp:latest"
