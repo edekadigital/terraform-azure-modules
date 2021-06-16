@@ -5,6 +5,8 @@
 
 var https = require("https");
 
+const VAGO_TEST = "string";
+
 const STRING = "string"; // example: 'some message'
 const STRING_ARRAY = "string-array"; // example: ['one message', 'two message', ...]
 const JSON_OBJECT = "json-object"; // example: {"key": "value"}
@@ -25,7 +27,7 @@ const DD_TAGS = process.env.DD_TAGS || ""; // Replace '' by your comma-separated
 const DEFAULT_DD_SERVICE = "azure";
 const DD_SOURCE = process.env.DD_SOURCE || "azure";
 const DD_SOURCE_CATEGORY = process.env.DD_SOURCE_CATEGORY || "azure";
-const DD_SERVICE_MAP = JSON.parse(process.env.DD_SERVICE_MAP || '{}')
+const DD_SERVICE_MAP = JSON.parse(process.env.DD_SERVICE_MAP || "{}");
 
 /*
 To scrub PII from your logs, uncomment the applicable configs below. If you'd like to scrub more than just
@@ -57,11 +59,11 @@ class Scrubber {
     for (const [name, settings] of Object.entries(configs)) {
       try {
         rules.push(
-            new ScrubberRule(name, settings["pattern"], settings["replacement"])
+          new ScrubberRule(name, settings["pattern"], settings["replacement"])
         );
       } catch {
         context.log.error(
-            `Regexp for rule ${name} pattern ${settings["pattern"]} is malformed, skipping. Please update the pattern for this rule to be applied.`
+          `Regexp for rule ${name} pattern ${settings["pattern"]} is malformed, skipping. Please update the pattern for this rule to be applied.`
         );
       }
     }
@@ -108,16 +110,16 @@ class EventhubLogForwarder {
   send(record) {
     return new Promise((resolve, reject) => {
       const req = https
-      .request(this.options, (resp) => {
-        if (resp.statusCode < 200 || resp.statusCode > 299) {
-          reject(`invalid status code ${resp.statusCode}`);
-        } else {
-          resolve();
-        }
-      })
-      .on("error", (error) => {
-        reject(error);
-      });
+        .request(this.options, (resp) => {
+          if (resp.statusCode < 200 || resp.statusCode > 299) {
+            reject(`invalid status code ${resp.statusCode}`);
+          } else {
+            resolve();
+          }
+        })
+        .on("error", (error) => {
+          reject(error);
+        });
       req.write(this.scrubber.scrub(JSON.stringify(record)));
       req.end();
     });
@@ -139,7 +141,7 @@ class EventhubLogForwarder {
         break;
       case STRING_ARRAY:
         logs.forEach((log) =>
-            promises.push(this.formatLogAndSend(STRING_TYPE, log))
+          promises.push(this.formatLogAndSend(STRING_TYPE, log))
         );
         break;
       case JSON_ARRAY:
@@ -183,7 +185,7 @@ class EventhubLogForwarder {
       }
       if (message.records !== undefined) {
         message.records.forEach((message) =>
-            promises.push(this.formatLogAndSend(JSON_TYPE, message))
+          promises.push(this.formatLogAndSend(JSON_TYPE, message))
         );
       } else {
         this.formatLogAndSend(JSON_TYPE, message);
@@ -246,17 +248,17 @@ class EventhubLogForwarder {
     record["ddsourcecategory"] = DD_SOURCE_CATEGORY;
     record["service"] = metadata.service;
     record["ddtags"] = metadata.tags
-    .concat([
-      DD_TAGS,
-      "forwardername:" + this.context.executionContext.functionName,
-    ])
-    .filter(Boolean)
-    .join(",");
+      .concat([
+        DD_TAGS,
+        "forwardername:" + this.context.executionContext.functionName,
+      ])
+      .filter(Boolean)
+      .join(",");
     return record;
   }
 
   addTagsToStringLog(stringLog) {
-    var jsonLog = {message: stringLog};
+    var jsonLog = { message: stringLog };
     return this.addTagsToJsonLog(jsonLog);
   }
 
@@ -287,10 +289,10 @@ class EventhubLogForwarder {
   }
 
   extractMetadataFromResource(record) {
-    var metadata = {tags: [], source: "", service: DEFAULT_DD_SERVICE};
+    var metadata = { tags: [], source: "", service: DEFAULT_DD_SERVICE };
     if (
-        record.resourceId === undefined ||
-        typeof record.resourceId !== "string"
+      record.resourceId === undefined ||
+      typeof record.resourceId !== "string"
     ) {
       return metadata;
     }
@@ -326,14 +328,14 @@ class EventhubLogForwarder {
         // service name will be the last part of resourceID
         // for checking resourceId of Azure Resources, use 'az resource list --name "myniceresource"' Azure CLI command:
         // https://docs.microsoft.com/de-de/cli/azure/resource?view=azure-cli-latest#az_resource_list
-        metadata.service = this.lookupService(resourceId)
+        metadata.service = this.lookupService(resourceId);
       }
     } else if (resourceId[0] === "tenants") {
       if (resourceId.length > 3 && resourceId[3]) {
         metadata.tags.push("tenant:" + resourceId[1]);
         metadata.source = this.formatSourceType(resourceId[3]).replace(
-            "aadiam",
-            "activedirectory"
+          "aadiam",
+          "activedirectory"
         );
       }
     }
@@ -343,11 +345,13 @@ class EventhubLogForwarder {
 
 module.exports = async function (context, eventHubMessages) {
   context.log.verbose(
-      `log-forwarder called with eventHubMessage: ${JSON.stringify(
-          eventHubMessages)}`);
+    `log-forwarder called with eventHubMessage: ${JSON.stringify(
+      eventHubMessages
+    )}`
+  );
   if (!DD_API_KEY || DD_API_KEY === "<DATADOG_API_KEY>") {
     const errorMessage =
-        "You must configure your API key before starting this function (see ## Parameters section)";
+      "You must configure your API key before starting this function (see ## Parameters section)";
     context.log.error(errorMessage);
     return;
   }
