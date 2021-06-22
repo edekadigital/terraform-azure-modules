@@ -7,7 +7,7 @@ resource "azurerm_container_group" "sftp" {
   os_type             = "Linux"
   container {
     name   = "sftp-source"
-    image  = "selamanse/sftp:latest"
+    image  = "edekadigital/sftp:latest"
     cpu    = "1"
     memory = "1.5"
     environment_variables = {
