@@ -85,9 +85,12 @@ resource "azurerm_function_app" "datadog" {
   os_type                    = "linux"
   https_only                 = true
 
-
   identity {
     type = "SystemAssigned"
+  }
+
+  site_config {
+    ftps_state = "FtpsOnly"
   }
 
   app_settings = {
