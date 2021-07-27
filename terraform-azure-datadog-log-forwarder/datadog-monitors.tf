@@ -22,11 +22,6 @@ resource "datadog_monitor" "event-hub-errors" {
   timeout_h    = 12
   include_tags = true
 
-  # ignore any changes in silenced value; using silenced is deprecated in favor of downtimes
-  lifecycle {
-    ignore_changes = [silenced]
-  }
-
   tags = concat(local.datadog_tags, local.datadog_monitors_tags, ["${var.datadog_tag_name_kind}:event-hub"])
 }
 
@@ -53,11 +48,6 @@ resource "datadog_monitor" "event-hub-healthcheck" {
 
   timeout_h    = 0
   include_tags = true
-
-  # ignore any changes in silenced value; using silenced is deprecated in favor of downtimes
-  lifecycle {
-    ignore_changes = [silenced]
-  }
 
   tags = concat(local.datadog_tags, local.datadog_monitors_tags, ["${var.datadog_tag_name_kind}:event-hub"])
 }
@@ -87,11 +77,6 @@ resource "datadog_monitor" "event-hub-quotas" {
   timeout_h    = 0
   include_tags = true
 
-  # ignore any changes in silenced value; using silenced is deprecated in favor of downtimes
-  lifecycle {
-    ignore_changes = [silenced]
-  }
-
   tags = concat(local.datadog_tags, local.datadog_monitors_tags, ["${var.datadog_tag_name_kind}:event-hub"])
 }
 
@@ -118,11 +103,6 @@ resource "datadog_monitor" "event-hub-throttling" {
 
   timeout_h    = 12
   include_tags = true
-
-  # ignore any changes in silenced value; using silenced is deprecated in favor of downtimes
-  lifecycle {
-    ignore_changes = [silenced]
-  }
 
   tags = concat(local.datadog_tags, local.datadog_monitors_tags, ["${var.datadog_tag_name_kind}:event-hub"])
 }
@@ -151,11 +131,6 @@ resource "datadog_monitor" "storage-account-healthcheck" {
   timeout_h    = 0
   include_tags = true
 
-  # ignore any changes in silenced value; using silenced is deprecated in favor of downtimes
-  lifecycle {
-    ignore_changes = [silenced]
-  }
-
   tags = concat(local.datadog_tags, local.datadog_monitors_tags, ["${var.datadog_tag_name_kind}:storage"])
 }
 
@@ -182,11 +157,6 @@ resource "datadog_monitor" "func-errors" {
 
   timeout_h    = 12
   include_tags = true
-
-  # ignore any changes in silenced value; using silenced is deprecated in favor of downtimes
-  lifecycle {
-    ignore_changes = [silenced]
-  }
 
   tags = concat(local.datadog_tags, local.datadog_monitors_tags, ["${var.datadog_tag_name_kind}:function"])
 }
@@ -215,11 +185,6 @@ resource "datadog_monitor" "func-executions" {
 
   timeout_h    = 0
   include_tags = true
-
-  # ignore any changes in silenced value; using silenced is deprecated in favor of downtimes
-  lifecycle {
-    ignore_changes = [silenced]
-  }
 
   tags = concat(local.datadog_tags, local.datadog_monitors_tags, ["${var.datadog_tag_name_kind}:function"])
 }
