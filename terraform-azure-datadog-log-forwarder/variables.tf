@@ -122,5 +122,5 @@ locals {
   datadog_tags                  = [for k, v in var.datadog_tags : "${k}:${v}"]
   datadog_monitors_tags         = [for k, v in var.datadog_monitors_tags : "${k}:${v}"]
   assigned_ressource_group_name = "${var.project_name_as_resource_prefix}-datadog-rg"
-  ressource_group_name          = "${var.existing_ressource_group != "" ? var.existing_ressource_group : local.assigned_ressource_group_name}"
+  ressource_group_name          = var.existing_ressource_group != "" ? var.existing_ressource_group : local.assigned_ressource_group_name
 }
