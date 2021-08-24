@@ -5,6 +5,7 @@ Forwarding logs received from eventhub to datadog.
 # Input variables to module
 * __resource_location__: default is `West Europe`
 * __project_name_as_resource_prefix__: project name as prefix for all created Azure Resources
+* __existing_ressource_group__: already existing ressource group can be used, new ressource group will not be created
 * __eventhub_message_retention__: retention for log events within Event Hub. Default is 1 day
 * __eventhub_partition_count__: partition count for Event Hub. Defaults to 4
 * __datadog_api_key__: target DD Api Key for forwarded logs

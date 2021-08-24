@@ -3,6 +3,12 @@ variable "project_name_as_resource_prefix" {
   type        = string
 }
 
+variable "existing_ressource_group" {
+  description = "Use an already existing ressource group for all Azure resources"
+  type        = string
+  default     = ""
+}
+
 variable "datadog_api_key" {
   description = "API key for datadog"
   type        = string
@@ -113,6 +119,8 @@ variable "eventhub_partition_count" {
 }
 
 locals {
-  datadog_tags          = [for k, v in var.datadog_tags : "${k}:${v}"]
-  datadog_monitors_tags = [for k, v in var.datadog_monitors_tags : "${k}:${v}"]
+  datadog_tags                  = [for k, v in var.datadog_tags : "${k}:${v}"]
+  datadog_monitors_tags         = [for k, v in var.datadog_monitors_tags : "${k}:${v}"]
+  assigned_ressource_group_name = "${var.project_name_as_resource_prefix}-datadog-rg"
+  ressource_group_name          = "${var.existing_ressource_group != "" ? var.existing_ressource_group : local.assigned_ressource_group_name}"
 }
