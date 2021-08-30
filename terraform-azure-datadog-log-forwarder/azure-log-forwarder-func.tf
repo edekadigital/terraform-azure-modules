@@ -12,8 +12,8 @@ data "archive_file" "app_code_datadog" {
 
 resource "azurerm_storage_account" "datadog" {
   name                      = replace("${var.project_name_as_resource_prefix}-dd-st", "-", "")
-  resource_group_name       = azurerm_resource_group.datadog.name
-  location                  = azurerm_resource_group.datadog.location
+  resource_group_name       = local.ressource_group_name
+  location                  = var.resource_location
   account_tier              = "Standard"
   account_replication_type  = "LRS"
   enable_https_traffic_only = true
@@ -56,13 +56,13 @@ data "azurerm_storage_account_sas" "sas_deploy_datadog" {
 // It is necessary to manually sync the function app triggers after deployment, see README
 data "azurerm_function_app_host_keys" "datadog" {
   name                = azurerm_function_app.datadog.name
-  resource_group_name = azurerm_resource_group.datadog.name
+  resource_group_name = local.ressource_group_name
 }
 
 resource "azurerm_app_service_plan" "datadog" {
   name                = "${var.project_name_as_resource_prefix}-datadog-plan"
   location            = var.resource_location
-  resource_group_name = azurerm_resource_group.datadog.name
+  resource_group_name = local.ressource_group_name
   kind                = "FunctionApp"
   reserved            = true
 
@@ -77,7 +77,7 @@ resource "azurerm_app_service_plan" "datadog" {
 resource "azurerm_function_app" "datadog" {
   name                       = "${var.project_name_as_resource_prefix}-datadog-func"
   location                   = var.resource_location
-  resource_group_name        = azurerm_resource_group.datadog.name
+  resource_group_name        = local.ressource_group_name
   app_service_plan_id        = azurerm_app_service_plan.datadog.id
   storage_account_name       = azurerm_storage_account.datadog.name
   storage_account_access_key = azurerm_storage_account.datadog.primary_access_key
@@ -118,7 +118,7 @@ resource "azurerm_function_app" "datadog" {
 resource "azurerm_application_insights" "datadog" {
   name                = "${var.project_name_as_resource_prefix}-datadog-app-insights"
   location            = var.resource_location
-  resource_group_name = azurerm_resource_group.datadog.name
+  resource_group_name = local.ressource_group_name
   application_type    = "Node.JS"
   tags                = var.azure_tags
 }
