@@ -44,7 +44,7 @@ aws ec2 authorize-security-group-ingress --group-id "${SG_ID}" --protocol tcp --
 SG_IDS="${SG_ID}"
 assert_non_zero "${SG_IDS}" "SG_IDS"
 
-export DEVOPS_ORG_TOKEN=icqeywzc7tge4tdmd3oaefio5povmkajtfhgeuviwkd2x7znwclq
+export DEVOPS_ORG_TOKEN=TOKEEEEEN
 
 packer build \
     ${PACKER_ARGS} \
