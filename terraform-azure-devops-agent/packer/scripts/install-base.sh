@@ -217,3 +217,12 @@ sudo systemctl enable snap.amazon-ssm-agent.amazon-ssm-agent.service
 sudo systemctl disable ssh.service
 
 sudo rm -f /etc/cron.d/popularity-contest
+
+sudo mv ~/install-agent.sh /var/lib/cloud/scripts/per-instance/install-agent.sh
+sudo chmod +x /var/lib/cloud/scripts/per-instance/install-agent.sh
+sudo chown root:root /var/lib/cloud/scripts/per-instance/install-agent.sh
+
+sudo mv ~/ec2-termination /etc/ec2-termination
+sudo chmod +x /etc/ec2-termination
+sudo chown root /etc/ec2-termination
+sudo ln -s /etc/ec2-termination /etc/rc0.d/S01ec2-termination
