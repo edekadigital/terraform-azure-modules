@@ -203,14 +203,48 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends \
   python3-pip \
   unzip \
   vim \
-  zulu11-jdk
+  zulu11-jdk \
+  docker-compose \
+  docker.io \
+  azure-cli \
+  jq
 sudo pip3 install \
   boto3 \
-  awscli
+  awscli \
+  six \
+  --ignore-installed
+sudo pip3 install \
+  requests \
+  --upgrade
+
 sudo gpasswd -a dd-agent adm
+sudo usermod -aG docker ubuntu
 
 sudo ln -fns /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 sudo dpkg-reconfigure -f noninteractive tzdata
+
+# Download and "install" nvm
+git clone https://github.com/nvm-sh/nvm $HOME/opt/nvm
+mkdir -p $HOME/local/nvm
+echo "# make nvm available at startup" >> ~/.bashrc
+echo "export NVM_DIR=$HOME/local/nvm" >> ~/.bashrc
+echo "source $HOME/opt/nvm/nvm.sh" >> ~/.bashrc # this loads nvm
+cat ~/.bashrc
+source ~/.bashrc
+
+export NVM_DIR=$HOME/local/nvm
+source $HOME/opt/nvm/nvm.sh
+
+# install npm versions
+nvm install 14
+nvm install 16
+nvm install 17
+
+# use npm 16 and make default
+nvm use 16
+nvm alias default 16
+
+npm install --global yarn
 
 sudo DEBIAN_FRONTEND=noninteractive apt-get -y autoremove
 sudo systemctl enable snap.amazon-ssm-agent.amazon-ssm-agent.service
@@ -221,8 +255,3 @@ sudo rm -f /etc/cron.d/popularity-contest
 sudo mv ~/install-agent.sh /var/lib/cloud/scripts/per-instance/install-agent.sh
 sudo chmod +x /var/lib/cloud/scripts/per-instance/install-agent.sh
 sudo chown root:root /var/lib/cloud/scripts/per-instance/install-agent.sh
-
-sudo mv ~/ec2-termination /etc/ec2-termination
-sudo chmod +x /etc/ec2-termination
-sudo chown root /etc/ec2-termination
-sudo ln -s /etc/ec2-termination /etc/rc0.d/S01ec2-termination

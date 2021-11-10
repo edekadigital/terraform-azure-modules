@@ -80,13 +80,8 @@ build {
   sources = ["source.amazon-ebs.ssm-example"]
 
   provisioner "file" {
-    content = templatefile("${path.root}/templates/install-agent.pkrtpl.hcl", { DEVOPS_ORG_TOKEN = var.devops_org_token })
-    destination = "~/install-agent.sh"
-  }
-
-  provisioner "file" {
-    content = templatefile("${path.root}/templates/ec2-termination.pkrtpl.hcl", { DEVOPS_ORG_TOKEN = var.devops_org_token })
-    destination = "~/ec2-termination"
+    content     = templatefile("${path.root}/templates/install-agent.pkrtpl.hcl", {})
+    destination = "~/install-agent.sh" # we are not root so can't save directly to /var/lib/cloud/script/per-instance/
   }
 
   provisioner "shell" {
