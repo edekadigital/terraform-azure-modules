@@ -10,8 +10,8 @@ variable "sg_id" {
   default = ""
 }
 
-variable "devops_org_token" {
-  default = "IMNOTATOKEN"
+variable "devops_org_token_secret_arn" {
+  default = "arn:aws:secretsmanager:eu-central-1:553574040935:secret:devops/agents/pat-rlBBXW"
 }
 
 data "amazon-ami" "ubuntu" {
@@ -27,6 +27,9 @@ data "amazon-ami" "ubuntu" {
 locals {
   source_ami_id   = data.amazon-ami.ubuntu.id
   source_ami_name = data.amazon-ami.ubuntu.name
+  var_retrieval = templatefile("${path.root}/templates/azure-vars.pkrtpl.hcl", {
+    SECRET_ID = var.devops_org_token_secret_arn
+  })
 }
 
 source "file" "example" {
@@ -80,7 +83,7 @@ build {
   sources = ["source.amazon-ebs.ssm-example"]
 
   provisioner "file" {
-    content     = templatefile("${path.root}/templates/install-agent.pkrtpl.hcl", {})
+    content     = templatefile("${path.root}/templates/install-agent.pkrtpl.hcl", { RETRIEVE_PARAMETERS = local.var_retrieval })
     destination = "~/install-agent.sh" # we are not root so can't save directly to /var/lib/cloud/script/per-instance/
   }
 

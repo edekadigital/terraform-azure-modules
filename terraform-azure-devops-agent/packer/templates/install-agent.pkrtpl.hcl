@@ -11,11 +11,7 @@ mkdir -p /src
 chown ubuntu /src
 chgrp ubuntu /src
 
-export AWS_CREDENTIAL_SOURCE=Ec2InstanceMetadata
-export AWS_DEFAULT_REGION=eu-central-1
-INSTANCE_ID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
-INSTANCE_NAME=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[].Instances[].Tags[?Key==`Name`].Value' --output text)
-DEVOPS_ORG_TOKEN=$(aws secretsmanager get-secret-value --secret-id arn:aws:secretsmanager:eu-central-1:553574040935:secret:devops/agents/pat-rlBBXW --query SecretString --output text)
+${RETRIEVE_PARAMETERS}
 
 LINUX_AGENT_URL="https://vstsagentpackage.azureedge.net/agent/2.194.0/vsts-agent-linux-x64-2.194.0.tar.gz"
 DEVOPS_ORG_URL="https://dev.azure.com/EDDI-CRM"

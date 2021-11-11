@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -ex
 
+export CURRENT_USER=$(whoami)
+echo $CURRENT_USER
+cat /etc/passwd
+
 sudo apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get -y full-upgrade
 sudo DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends apt-transport-https
@@ -218,7 +222,7 @@ sudo pip3 install \
   --upgrade
 
 sudo gpasswd -a dd-agent adm
-sudo usermod -aG docker ubuntu
+sudo usermod -aG docker $CURRENT_USER
 
 sudo ln -fns /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 sudo dpkg-reconfigure -f noninteractive tzdata
@@ -247,8 +251,11 @@ nvm alias default 16
 npm install --global yarn
 
 sudo DEBIAN_FRONTEND=noninteractive apt-get -y autoremove
-sudo systemctl enable snap.amazon-ssm-agent.amazon-ssm-agent.service
-sudo systemctl disable ssh.service
+sudo systemctl status snap.amazon-ssm-agent.amazon-ssm-agent.service && \
+    sudo systemctl enable snap.amazon-ssm-agent.amazon-ssm-agent.service && \
+    sudo systemctl disable ssh.service \
+  || echo "amazon-ssm-agent not installed (are we on azure?)"
+
 
 sudo rm -f /etc/cron.d/popularity-contest
 

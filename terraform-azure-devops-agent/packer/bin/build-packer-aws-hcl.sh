@@ -44,11 +44,11 @@ aws ec2 authorize-security-group-ingress --group-id "${SG_ID}" --protocol tcp --
 SG_IDS="${SG_ID}"
 assert_non_zero "${SG_IDS}" "SG_IDS"
 
-export DEVOPS_ORG_TOKEN=TOKEEEEEN
 export PKR_VAR_sg_id=${SG_ID}
 export PKR_VAR_vpc_id=${VPC_ID}
+export PKR_VAR_devops_org_token_secret_arn=PAT_SECRET_ARN
 
 packer build \
     ${PACKER_ARGS} \
-    "devops-agent.pkr.hcl" |
+    "devops-agent-aws.pkr.hcl" |
     tee ${TMPFILE}
