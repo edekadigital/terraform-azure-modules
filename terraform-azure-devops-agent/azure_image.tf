@@ -1,4 +1,5 @@
 data "azurerm_image" "devops_agent_packer" {
-  name                = "devops-agent"
+  name_regex          = "devops-agent.*"
   resource_group_name = "crm-shared-rg"
+  sort_descending     = true
 }
