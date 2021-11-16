@@ -23,12 +23,30 @@ resource "azurerm_subnet" "internal" {
   address_prefixes     = ["10.0.2.0/24"]
 }
 
-resource "azurerm_public_ip" "main" {
-  name = "${var.prefix}-public-ip"
-  location = azurerm_resource_group.main.location
+resource "azurerm_subnet" "bastion" {
+  name                 = "bastion"
+  resource_group_name  = azurerm_resource_group.main.name
+  virtual_network_name = azurerm_virtual_network.main.name
+  address_prefixes     = ["10.0.0.0/28"]
+}
+
+resource "azurerm_network_security_group" "bastion" {
+  name                = "${var.prefix}-bastion-nsg"
   resource_group_name = azurerm_resource_group.main.name
-  allocation_method = "Static"
-  sku = "Standard"
+  location            = azurerm_resource_group.main.location
+}
+
+resource "azurerm_subnet_network_security_group_association" "bastion" {
+  network_security_group_id = azurerm_network_security_group.bastion.id
+  subnet_id                 = azurerm_subnet.bastion.id
+}
+
+resource "azurerm_public_ip" "main" {
+  name                = "${var.prefix}-public-ip"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }
 
 resource "azurerm_nat_gateway" "main" {
@@ -38,7 +56,7 @@ resource "azurerm_nat_gateway" "main" {
 }
 
 resource "azurerm_nat_gateway_public_ip_association" "main" {
-  nat_gateway_id = azurerm_nat_gateway.main.id
+  nat_gateway_id       = azurerm_nat_gateway.main.id
   public_ip_address_id = azurerm_public_ip.main.id
 }
 
@@ -86,7 +104,7 @@ resource "azurerm_linux_virtual_machine" "devops-agent" {
   identity {
     type = "SystemAssigned"
   }
- 
+
 }
 
 data "azurerm_key_vault" "shared-kv" {
@@ -95,7 +113,7 @@ data "azurerm_key_vault" "shared-kv" {
 }
 
 resource "azurerm_key_vault_access_policy" "devops-agent" {
-  for_each = azurerm_linux_virtual_machine.devops-agent
+  for_each     = azurerm_linux_virtual_machine.devops-agent
   key_vault_id = data.azurerm_key_vault.shared-kv.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
   object_id    = azurerm_linux_virtual_machine.devops-agent[each.key].identity.0.principal_id
