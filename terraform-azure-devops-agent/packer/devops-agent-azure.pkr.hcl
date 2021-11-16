@@ -47,14 +47,14 @@ source "azure-arm" "devops-agent" {
   managed_image_resource_group_name = var.rg_name
   managed_image_name                = "devops-agent-{{timestamp}}"
   vm_size                           = "Standard_DS2_v2"
-  
+
   location = "West Europe"
 
 }
 
 locals {
   var_retrieval = templatefile("${path.root}/templates/azure-vars.pkrtpl.hcl", {
-    VAULT_NAME = var.vault_name,
+    VAULT_NAME  = var.vault_name,
     SECRET_NAME = var.secret_name
   })
 }

@@ -1,17 +1,23 @@
 variable "region" {
+  type    = string
   default = "eu-central-1"
 }
 
 variable "vpc_id" {
-  default = ""
+  type = string
 }
 
 variable "sg_id" {
-  default = ""
+  type = string
 }
 
 variable "devops_org_token_secret_arn" {
-  default = "arn:aws:secretsmanager:eu-central-1:553574040935:secret:devops/agents/pat-rlBBXW"
+  type = string
+}
+
+variable "tags" {
+  type    = map(string)
+  default = {}
 }
 
 data "amazon-ami" "ubuntu" {
@@ -27,35 +33,23 @@ data "amazon-ami" "ubuntu" {
 locals {
   source_ami_id   = data.amazon-ami.ubuntu.id
   source_ami_name = data.amazon-ami.ubuntu.name
-  var_retrieval = templatefile("${path.root}/templates/azure-vars.pkrtpl.hcl", {
+  var_retrieval = templatefile("${path.root}/templates/aws-vars.pkrtpl.hcl", {
     SECRET_ID = var.devops_org_token_secret_arn
   })
 }
 
-source "file" "example" {
-  content = "example content"
-}
-
-source "amazon-ebs" "ssm-example" {
+source "amazon-ebs" "devops-agent" {
   ami_name                    = "az-devops-agent-{{timestamp}}"
   vpc_id                      = var.vpc_id
   instance_type               = "m5.large"
   region                      = var.region
-  source_ami                  = data.amazon-ami.ubuntu.id
+  source_ami                  = local.source_ami_id
   ssh_username                = "ubuntu"
   ssh_clear_authorized_keys   = true
   encrypt_boot                = false
   associate_public_ip_address = true
   communicator                = "ssh"
   security_group_ids          = [var.sg_id]
-  # temporary_iam_instance_profile_policy_document {
-  #   Version = "2012-10-17"
-  #   Statement {
-  #     Action   = ["ssm:GetParameter"]
-  #     Effect   = "Allow"
-  #     Resource = ["arn:aws:ssm:*:*:parameter/azure-devops/*"]
-  #   }
-  # }
   subnet_filter {
     filters = {
       "vpc-id" : "${var.vpc_id}",
@@ -63,16 +57,8 @@ source "amazon-ebs" "ssm-example" {
     }
     random = true
   }
-  tags = {
-    "Name" : "azure-devops",
-    "service" : "azure-devops",
-    "team" : "thundercats"
-  }
-  run_tags = {
-    "Name" : "azure-devops",
-    "service" : "azure-devops",
-    "team" : "thundercats"
-  }
+  tags                  = var.tags
+  run_tags              = var.tags
   force_deregister      = true
   force_delete_snapshot = true
 
@@ -80,7 +66,7 @@ source "amazon-ebs" "ssm-example" {
 
 
 build {
-  sources = ["source.amazon-ebs.ssm-example"]
+  sources = ["source.amazon-ebs.devops-agent"]
 
   provisioner "file" {
     content     = templatefile("${path.root}/templates/install-agent.pkrtpl.hcl", { RETRIEVE_PARAMETERS = local.var_retrieval })
@@ -90,13 +76,5 @@ build {
   provisioner "shell" {
     script = "scripts/install-base.sh"
   }
-
-  provisioner "shell" {
-    inline = [
-      "sudo ls -al /var/lib/cloud/scripts/per-instance/"
-      #"sudo cat /var/lib/cloud/scripts/per-instance/install-agent.sh"
-    ]
-  }
-
 }
 
