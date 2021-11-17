@@ -1,0 +1,74 @@
+name: 'terraform-azure-devops-agent-packer'
+
+on:
+  push:
+    paths:
+    - 'terraform-azure-devops-agent/packer/**'
+    - '.github/workflows/terraform-azure-devops-agent-packer.yml'
+    branches:
+    - main
+  pull_request:
+    paths:
+    - 'terraform-azure-devops-agent/packer/**'
+    - '.github/workflows/terraform-azure-devops-agent-packer.yml'
+
+defaults:
+  run:
+    working-directory: terraform-azure-devops-agent/packer
+    shell: bash
+
+jobs:
+  validate:
+    name: 'validate-packer-configs'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: 
+        pkr: ['devops-agent-aws.pkr.hcl', 'devops-agent-azure.pkr.hcl']
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # validate templates
+    - name: Check Format of Template
+      uses: hashicorp/packer-github-actions@master
+      with:
+        command: fmt
+        arguments: -check
+        target: ${{ matrix.pkr }}
+
+    # fix backwards incompatibilities in template
+    - name: Fix Template
+      uses: hashicorp/packer-github-actions@master
+      with:
+        command: fix
+        target: ${{ matrix.pkr }}
+
+    # validate templates
+    - name: Validate Template
+      uses: hashicorp/packer-github-actions@master
+      with:
+        command: validate
+        arguments: -syntax-only
+        target: ${{ matrix.pkr }}
+
+  build:
+    name: 'validate-packer-configs'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: 
+        forhyperscaler: ['aws', 'azure']
+
+    steps:
+    # fix backwards incompatibilities in template
+    - name: Fix Template
+      uses: hashicorp/packer-github-actions@master
+      with:
+        command: fix
+        target: ${{ matrix.pkr }}
+
+    # build artifact
+    - name: build ${{ matrix.forhyperscaler }} image
+      if: success() && github.ref == 'refs/heads/master'
+      run: bin/build-packer-${{ matrix.forhyperscaler }}-hcl.sh
