@@ -22,6 +22,11 @@ else
   AWS_PROFILE=${AWS_PROFILE:-dpp-shared-administrator}
 fi
 
+if [ -n "$DEVOPS_AGENT_VERSION" ]
+then
+  export PKR_VAR_agent_version=${DEVOPS_AGENT_VERSION}
+fi
+
 # shellcheck disable=SC2155
 VPC_ID=$(aws ec2 describe-vpcs \
   --query 'Vpcs[0].VpcId' \

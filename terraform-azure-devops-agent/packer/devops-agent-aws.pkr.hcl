@@ -20,6 +20,11 @@ variable "tags" {
   default = {}
 }
 
+variable "agent_version" {
+  type    = string
+  default = "2.194.0"
+}
+
 data "amazon-ami" "ubuntu" {
   filters = {
     virtualization-type = "hvm"
@@ -74,6 +79,9 @@ build {
   }
 
   provisioner "shell" {
+    environment_vars = [
+      "AGENT_VERSION=${var.agent_version}"
+    ]
     script = "scripts/install-base.sh"
   }
 }

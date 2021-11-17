@@ -111,6 +111,21 @@ sudo systemctl status snap.amazon-ssm-agent.amazon-ssm-agent.service && \
     sudo systemctl disable ssh.service \
   || echo "amazon-ssm-agent not installed (are we on azure?)"
 
+LINUX_AGENT_URL=https://vstsagentpackage.azureedge.net/agent/${AGENT_VERSION}/vsts-agent-linux-x64-${AGENT_VERSION}.tar.gz
+
+if [ "$(curl $LINUX_AGENT_URL -I 2>/dev/null | head -1 | cut -d' ' -f2)" -eq "200" ]
+then
+  echo "Agent with version ${AGENT_VERSION} found, dowloading..."
+  sudo mkdir -p /src
+  sudo chown ubuntu /src
+  sudo chgrp ubuntu /src
+  cd /src
+  wget -c $LINUX_AGENT_URL -O - | tar -xz
+  cd -
+else
+  >&2 echo "Agent with version ${AGENT_VERSION} not found, please check agent_version variable and try again."
+  exit 1
+fi
 
 sudo rm -f /etc/cron.d/popularity-contest
 
