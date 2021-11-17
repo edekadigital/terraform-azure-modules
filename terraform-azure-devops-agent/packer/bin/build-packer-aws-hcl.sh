@@ -8,19 +8,12 @@ assert_non_zero() {
   fi
 }
 
-
 TMPFILE=$(mktemp)
 trap "rm -f ${TMPFILE}" EXIT
 
 TIMESTAMP=$(date +%Y%m%d%H%M)
 AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-eu-central-1}
 PACKER_ARGS=""
-if [ -n "${CODEBUILD_BUILD_NUMBER}" ]; then
-  . ${CODEBUILD_SRC_DIR}/bin/assume-role.sh "${TARGET_ROLE}"
-  PACKER_ARGS="${PACKER_ARGS} -color=false"
-else
-  AWS_PROFILE=${AWS_PROFILE:-dpp-shared-administrator}
-fi
 
 if [ -n "$DEVOPS_AGENT_VERSION" ]
 then
