@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: 
-        pkr: ['devops-agent-aws.pkr.hcl', 'devops-agent-azure.pkr.hcl']
+        pkr: ['./devops-agent-aws.pkr.hcl', './devops-agent-azure.pkr.hcl']
 
     steps:
     # Checkout the repository to the GitHub Actions runner
