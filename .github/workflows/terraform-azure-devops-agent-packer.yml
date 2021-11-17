@@ -60,9 +60,10 @@ jobs:
         forhyperscaler: ['aws', 'azure']
 
     steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v2
+
     # build artifact
     - name: build ${{ matrix.forhyperscaler }} image      
-      run: |
-        ls -lah
-        cd ${{ env.WORKDIR }}
-        bin/build-packer-${{ matrix.forhyperscaler }}-hcl.sh
+      run: bin/build-packer-${{ matrix.forhyperscaler }}-hcl.sh
