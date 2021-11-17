@@ -41,6 +41,7 @@ locals {
   var_retrieval = templatefile("templates/aws-vars.pkrtpl.hcl", {
     SECRET_ID = var.devops_org_token_secret_arn
   })
+  scripts_folder = "${path.root}/scripts"
 }
 
 source "amazon-ebs" "devops-agent" {
@@ -82,7 +83,7 @@ build {
     environment_vars = [
       "AGENT_VERSION=${var.agent_version}"
     ]
-    script = "scripts/install-base.sh"
+    script = "${local.scripts_folder}/install-base.sh"
   }
 }
 

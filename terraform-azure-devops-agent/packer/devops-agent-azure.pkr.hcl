@@ -62,6 +62,7 @@ locals {
     VAULT_NAME  = var.vault_name,
     SECRET_NAME = var.secret_name
   })
+  scripts_folder = "${path.root}/scripts"
 }
 
 build {
@@ -73,7 +74,7 @@ build {
   }
 
   provisioner "shell" {
-    script = "scripts/install-base.sh"
+    script = "${local.scripts_folder}/install-base.sh"
   }
 
   provisioner "shell" {
