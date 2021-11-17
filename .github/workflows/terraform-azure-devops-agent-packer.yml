@@ -61,7 +61,11 @@ jobs:
       PKR_VAR_tenant_id: ${{ secrets.ARM_TENANT_ID }}
       PKR_VAR_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       PKR_VAR_rg_name: ${{ secrets.MANAGED_IMAGE_RG }}
-      DEVOPS_AGENT_VERSION: 2.194.0
+      PKR_VAR_agent_version: 2.194.0
+      PKR_VAR_sg_id: ${{ secrets.SG_ID }}
+      PKR_VAR_vpc_id: ${{ secrets.VPC_ID }}
+      PKR_VAR_devops_org_token_secret_arn: ${{ secrets.PAT_SECRET_ARN }}
+      PKR_VAR_tags: '{Name="azure-devops",service="azure-devops",team="thundercats"}'
     strategy:
       matrix: 
         forhyperscaler: ['aws', 'azure']
@@ -71,9 +75,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # build artifact
-    - name: build ${{ matrix.forhyperscaler }} image      
-      run: bin/build-packer-${{ matrix.forhyperscaler }}-hcl.sh
+    - name: build ${{ matrix.pkr }} image
+      uses: hashicorp/packer-github-actions@master
+      with:
+        command: build
+        target: ${{ env.WORKDIR }}/devops-agent-${{ matrix.forhyperscaler }}.pkr.hcl
 
 
 
