@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "description": "Azure function app code for log forwarding to datadog",
   "author": "Ferdi Güran <ferdi.gueran@edeka.de>",
+  "repository": "https://github.com/edekadigital/terraform-azure-modules.git",
+  "license": "Apache-2.0",
   "scripts": {
     "test": "jest --coverage",
     "test-watch": "jest --watch --coverage"
