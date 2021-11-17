@@ -12,18 +12,22 @@ on:
     - 'terraform-azure-devops-agent/packer/**'
     - '.github/workflows/terraform-azure-devops-agent-packer.yml'
 
+env:
+      WORKDIR: terraform-azure-devops-agent/packer
+
 defaults:
   run:
-    working-directory: terraform-azure-devops-agent/packer
+    working-directory: ${{ env.WORKDIR }}
     shell: bash
 
 jobs:
   validate:
     name: 'validate-packer-configs'
     runs-on: ubuntu-latest
+    
     strategy:
       matrix: 
-        pkr: ['./devops-agent-aws.pkr.hcl', './devops-agent-azure.pkr.hcl']
+        pkr: ['devops-agent-aws.pkr.hcl', 'devops-agent-azure.pkr.hcl']
 
     steps:
     # Checkout the repository to the GitHub Actions runner
@@ -36,14 +40,14 @@ jobs:
       with:
         command: fmt
         arguments: -check
-        target: ${{ matrix.pkr }}
+        target: ${{ env.WORKDIR }}/${{ matrix.pkr }}
 
     # fix backwards incompatibilities in template
     - name: Fix Template
       uses: hashicorp/packer-github-actions@master
       with:
         command: fix
-        target: ${{ matrix.pkr }}
+        target: ${{ env.WORKDIR }}/${{ matrix.pkr }}
 
     # validate templates
     - name: Validate Template
@@ -51,7 +55,7 @@ jobs:
       with:
         command: validate
         arguments: -syntax-only
-        target: ${{ matrix.pkr }}
+        target: ${{ env.WORKDIR }}/${{ matrix.pkr }}
 
   build:
     name: 'validate-packer-configs'
@@ -66,7 +70,7 @@ jobs:
       uses: hashicorp/packer-github-actions@master
       with:
         command: fix
-        target: ${{ matrix.pkr }}
+        target: ${{ env.WORKDIR }}/devops-agent-${{ matrix.forhyperscaler }}.pkr.hcl
 
     # build artifact
     - name: build ${{ matrix.forhyperscaler }} image
