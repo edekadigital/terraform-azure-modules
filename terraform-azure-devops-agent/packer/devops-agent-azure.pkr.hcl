@@ -58,7 +58,7 @@ source "azure-arm" "devops-agent" {
 }
 
 locals {
-  var_retrieval = templatefile("${path.root}/templates/azure-vars.pkrtpl.hcl", {
+  var_retrieval = templatefile("templates/azure-vars.pkrtpl.hcl", {
     VAULT_NAME  = var.vault_name,
     SECRET_NAME = var.secret_name
   })
@@ -68,7 +68,7 @@ build {
   sources = ["source.azure-arm.devops-agent"]
 
   provisioner "file" {
-    content     = templatefile("${path.root}/templates/install-agent.pkrtpl.hcl", { RETRIEVE_PARAMETERS = local.var_retrieval })
+    content     = templatefile("templates/install-agent.pkrtpl.hcl", { RETRIEVE_PARAMETERS = local.var_retrieval })
     destination = "~/install-agent.sh" # we are not root so can't save directly to /var/lib/cloud/script/per-instance/
   }
 

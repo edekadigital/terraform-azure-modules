@@ -38,7 +38,7 @@ data "amazon-ami" "ubuntu" {
 locals {
   source_ami_id   = data.amazon-ami.ubuntu.id
   source_ami_name = data.amazon-ami.ubuntu.name
-  var_retrieval = templatefile("${path.root}/templates/aws-vars.pkrtpl.hcl", {
+  var_retrieval = templatefile("templates/aws-vars.pkrtpl.hcl", {
     SECRET_ID = var.devops_org_token_secret_arn
   })
 }
@@ -74,7 +74,7 @@ build {
   sources = ["source.amazon-ebs.devops-agent"]
 
   provisioner "file" {
-    content     = templatefile("${path.root}/templates/install-agent.pkrtpl.hcl", { RETRIEVE_PARAMETERS = local.var_retrieval })
+    content     = templatefile("templates/install-agent.pkrtpl.hcl", { RETRIEVE_PARAMETERS = local.var_retrieval })
     destination = "~/install-agent.sh" # we are not root so can't save directly to /var/lib/cloud/script/per-instance/
   }
 
