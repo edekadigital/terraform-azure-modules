@@ -22,7 +22,7 @@ defaults:
 
 jobs:
   validate:
-    name: 'validate-packer-configs'
+    name: 'validate-config'
     runs-on: ubuntu-latest
     
     strategy:
@@ -42,13 +42,6 @@ jobs:
         arguments: -check
         target: ${{ env.WORKDIR }}/${{ matrix.pkr }}
 
-    # fix backwards incompatibilities in template
-    - name: Fix Template
-      uses: hashicorp/packer-github-actions@master
-      with:
-        command: fix
-        target: ${{ env.WORKDIR }}/${{ matrix.pkr }}
-
     # validate templates
     - name: Validate Template
       uses: hashicorp/packer-github-actions@master
@@ -58,21 +51,14 @@ jobs:
         target: ${{ env.WORKDIR }}/${{ matrix.pkr }}
 
   build:
-    name: 'validate-packer-configs'
+    name: 'build-image'
     runs-on: ubuntu-latest
+    if: success() && github.ref == 'refs/heads/master'
     strategy:
       matrix: 
         forhyperscaler: ['aws', 'azure']
 
     steps:
-    # fix backwards incompatibilities in template
-    - name: Fix Template
-      uses: hashicorp/packer-github-actions@master
-      with:
-        command: fix
-        target: ${{ env.WORKDIR }}/devops-agent-${{ matrix.forhyperscaler }}.pkr.hcl
-
     # build artifact
-    - name: build ${{ matrix.forhyperscaler }} image
-      if: success() && github.ref == 'refs/heads/master'
+    - name: build ${{ matrix.forhyperscaler }} image      
       run: bin/build-packer-${{ matrix.forhyperscaler }}-hcl.sh
