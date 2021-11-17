@@ -62,4 +62,7 @@ jobs:
     steps:
     # build artifact
     - name: build ${{ matrix.forhyperscaler }} image      
-      run: ./bin/build-packer-${{ matrix.forhyperscaler }}-hcl.sh
+      run: |
+        ls -lah
+        cd ${{ env.WORKDIR }}
+        bin/build-packer-${{ matrix.forhyperscaler }}-hcl.sh
