@@ -53,7 +53,8 @@ jobs:
   build:
     name: 'build-image'
     runs-on: ubuntu-latest
-    if: success() && github.ref == 'refs/heads/master'
+    needs: [validate]
+    #if: success() && github.ref == 'refs/heads/master'
     strategy:
       matrix: 
         forhyperscaler: ['aws', 'azure']
