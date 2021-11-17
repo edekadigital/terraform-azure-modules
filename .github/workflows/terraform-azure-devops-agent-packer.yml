@@ -36,7 +36,7 @@ jobs:
 
     # validate templates
     - name: Check Format of Template
-      uses: hashicorp/packer-github-actions@master
+      uses: selamanse/packer-github-actions@master
       with:
         command: fmt
         arguments: -check
@@ -44,7 +44,7 @@ jobs:
 
     # validate templates
     - name: Validate Template
-      uses: hashicorp/packer-github-actions@master
+      uses: selamanse/packer-github-actions@master
       with:
         command: validate
         arguments: -syntax-only
@@ -79,7 +79,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: build ${{ matrix.pkr }} image
-      uses: hashicorp/packer-github-actions@master
+      uses: selamanse/packer-github-actions@master
       with:
         command: build
         target: ${{ env.WORKDIR }}/devops-agent-${{ matrix.forhyperscaler }}.pkr.hcl
