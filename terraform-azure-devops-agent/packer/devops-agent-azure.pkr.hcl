@@ -18,21 +18,14 @@ variable "rg_name" {
   type = string
 }
 
-variable "vault_name" {
-  type = string
-}
-
-variable "secret_name" {
-  type = string
+variable "agent_version" {
+  type    = string
+  default = "2.194.0"
 }
 
 variable "tags" {
   type    = map(string)
   default = {}
-}
-
-variable "devops_org_token" {
-  type = string
 }
 
 source "azure-arm" "devops-agent" {
@@ -58,10 +51,7 @@ source "azure-arm" "devops-agent" {
 }
 
 locals {
-  var_retrieval = templatefile("templates/azure-vars.pkrtpl.hcl", {
-    VAULT_NAME  = var.vault_name,
-    SECRET_NAME = var.secret_name
-  })
+  var_retrieval = templatefile("templates/azure-vars.pkrtpl.hcl", {})
   scripts_folder = "${path.root}/scripts"
 }
 
@@ -74,15 +64,10 @@ build {
   }
 
   provisioner "shell" {
+    environment_vars = [
+      "AGENT_VERSION=${var.agent_version}"
+    ]
     script = "${local.scripts_folder}/install-base.sh"
   }
-
-  provisioner "shell" {
-    inline = [
-      "sudo ls -al /var/lib/cloud/scripts/per-instance/",
-      "sudo cat /var/lib/cloud/scripts/per-instance/install-agent.sh"
-    ]
-  }
-
 }
 

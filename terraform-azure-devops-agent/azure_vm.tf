@@ -1,12 +1,53 @@
 variable "prefix" {
-  default = "rg-crm-devops-agents"
+  default = ""
+}
+
+variable "key_vault_name" {
+  type = string
+}
+
+variable "key_vault_rg_name" {
+  type = string
+}
+
+variable "azure_devops_pat_secret_prefix" {
+  type    = string
+  default = ""
+}
+
+variable "ssh_public_keys" {
+  type    = list(string)
+  default = []
+}
+
+variable "azure_vm_instance_size" {
+  type    = string
+  default = "Standard_DS3_v2"
+}
+
+variable "azure_instance_count" {
+  type = number
+}
+locals {
+  keyvault_devops_pat_secret_name = replace(var.devops_pat_secret_name, "/", "-")
 }
 
 data "azurerm_client_config" "current" {}
 
+data "azurerm_key_vault" "shared-kv" {
+  name                = var.key_vault_name
+  resource_group_name = var.key_vault_rg_name
+}
+
 resource "azurerm_resource_group" "main" {
-  name     = "${var.prefix}-resources"
+  name     = "rg-${var.prefix}-resources"
   location = "West Europe"
+}
+
+resource "azurerm_key_vault_secret" "devops_pat" {
+  name         = "${var.azure_devops_pat_secret_prefix}${local.keyvault_devops_pat_secret_name}"
+  key_vault_id = data.azurerm_key_vault.shared-kv.id
+  value        = var.devops_pat
 }
 
 resource "azurerm_virtual_network" "main" {
@@ -66,7 +107,8 @@ resource "azurerm_subnet_nat_gateway_association" "example" {
 }
 
 resource "azurerm_network_interface" "main" {
-  name                = "${var.prefix}-nic"
+  count               = var.azure_instance_count
+  name                = format("%s-%03d-nic", var.prefix, count.index)
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 
@@ -78,20 +120,31 @@ resource "azurerm_network_interface" "main" {
 }
 
 resource "azurerm_linux_virtual_machine" "devops-agent" {
-  for_each = toset(["one"])
+  count = var.azure_instance_count
 
-  name                = "azure-instance-${each.key}"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  size                = "Standard_DS3_v2"
-  admin_username      = "ubuntu"
-  network_interface_ids = [
-    azurerm_network_interface.main.id,
-  ]
+  name                  = format("azure-instance-%03d", count.index + 1)
+  resource_group_name   = azurerm_resource_group.main.name
+  location              = azurerm_resource_group.main.location
+  size                  = var.azure_vm_instance_size
+  admin_username        = "ubuntu"
+  source_image_id       = data.azurerm_image.devops_agent_packer.id
+  network_interface_ids = [azurerm_network_interface.main[count.index].id]
 
-  admin_ssh_key {
-    username   = "ubuntu"
-    public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHkv3WMfJRwU4Aq0PFbIdTuLpGIqHpQdapy1NAAVdEHMbRKADkR5gw+OTmaph6dh2iUMhqDtOnt7bCy3QxJOz3Fw7CODaFFiEjblwD0gu+6D+v0npcVHQe6KmkPn5FltqHqPOcpKqeUlNvqrK2qyYmmuS/ZRp6xsCoGnma16p4GIlG0j5/gylg/q0Ixi1HFgsgT5nGoN8qv4HXKnN7PYioANWlVsh7KDyJ0Ch7AbETkH+sACzURMcTlUYJmw7FlY9J1tmPcQ+uH5qdnOMqn/t1HTUI+DgA0Ny8deXfA6+WMPlg5DBHprWeJLGbnPEQWq+xfmzUNiZzrXh5iVjffhWD nicoengelen@Nicos-MBP"
+  custom_data = base64encode(templatefile("${path.module}/cloud-init.tpl", {
+    ENV_VARS = {
+      "VAULT_NAME"        = data.azurerm_key_vault.shared-kv.name
+      "SECRET_NAME"       = azurerm_key_vault_secret.devops_pat.name
+      "AGENT_NAME_PREFIX" = "${var.agent_name_prefix}-azure"
+      "DEVOPS_ORG_URL"    = var.devops_org_url
+      "DEVOPS_AGENT_POOL" = var.devops_agent_pool
+  } }))
+
+  dynamic "admin_ssh_key" {
+    for_each = toset(var.ssh_public_keys)
+    content {
+      username   = "ubuntu"
+      public_key = admin_ssh_key.value
+    }
   }
 
   os_disk {
@@ -99,24 +152,16 @@ resource "azurerm_linux_virtual_machine" "devops-agent" {
     storage_account_type = "Standard_LRS"
   }
 
-  source_image_id = data.azurerm_image.devops_agent_packer.id
-
   identity {
     type = "SystemAssigned"
   }
-
-}
-
-data "azurerm_key_vault" "shared-kv" {
-  name                = "crm-shared-kv"
-  resource_group_name = "crm-shared-rg"
 }
 
 resource "azurerm_key_vault_access_policy" "devops-agent" {
-  for_each     = azurerm_linux_virtual_machine.devops-agent
+  count        = length(azurerm_linux_virtual_machine.devops-agent)
   key_vault_id = data.azurerm_key_vault.shared-kv.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = azurerm_linux_virtual_machine.devops-agent[each.key].identity.0.principal_id
+  object_id    = azurerm_linux_virtual_machine.devops-agent[count.index].identity.0.principal_id
   secret_permissions = [
     "Get"
   ]

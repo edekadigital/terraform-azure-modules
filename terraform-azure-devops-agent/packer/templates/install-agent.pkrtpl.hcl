@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 set -ex
 
+source /etc/environment
+env
+
 ${RETRIEVE_PARAMETERS}
 
-DEVOPS_ORG_URL="https://dev.azure.com/EDDI-CRM"
-DEVOPS_AGENT_POOL="aws-by-thundercats"
-NAME=best-devops-agent-ever-$INSTANCE_NAME
+#DEVOPS_ORG_URL= #"https://dev.azure.com/EDDI-CRM"
+#DEVOPS_AGENT_POOL="aws-by-thundercats"
+NAME=$AGENT_NAME_PREFIX-$INSTANCE_NAME
 
 cd /src
 

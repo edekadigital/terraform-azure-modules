@@ -11,10 +11,6 @@ variable "sg_id" {
   type = string
 }
 
-variable "devops_org_token_secret_arn" {
-  type = string
-}
-
 variable "tags" {
   type    = map(string)
   default = {}
@@ -38,9 +34,7 @@ data "amazon-ami" "ubuntu" {
 locals {
   source_ami_id   = data.amazon-ami.ubuntu.id
   source_ami_name = data.amazon-ami.ubuntu.name
-  var_retrieval = templatefile("templates/aws-vars.pkrtpl.hcl", {
-    SECRET_ID = var.devops_org_token_secret_arn
-  })
+  var_retrieval = templatefile("${path.root}/templates/aws-vars.pkrtpl.hcl", {})
   scripts_folder = "${path.root}/scripts"
 }
 
