@@ -56,6 +56,9 @@ jobs:
     #needs: [validate]
     #if: success() && github.ref == 'refs/heads/master'
     env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.PACKER_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.PACKER_AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: eu-central-1
       PKR_VAR_client_id: ${{ secrets.ARM_CLIENT_ID }}
       PKR_VAR_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
       PKR_VAR_tenant_id: ${{ secrets.ARM_TENANT_ID }}
