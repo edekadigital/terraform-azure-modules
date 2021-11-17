@@ -13,11 +13,11 @@ on:
     - '.github/workflows/terraform-azure-devops-agent-packer.yml'
 
 env:
-      WORKDIR: terraform-azure-devops-agent/packer
+  WORKDIR: terraform-azure-devops-agent/packer
 
 defaults:
   run:
-    working-directory: ${{ env.WORKDIR }}
+    working-directory: terraform-azure-devops-agent/packer
     shell: bash
 
 jobs:
