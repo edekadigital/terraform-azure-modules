@@ -61,7 +61,7 @@ jobs:
 
     steps:
     # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
+    - name: Checkout code
       uses: actions/checkout@v2
 
     # build artifact
