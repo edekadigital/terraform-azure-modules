@@ -1,33 +1,38 @@
 variable "client_id" {
-  default = ""
+  type = string
 }
 
 variable "client_secret" {
-  default = ""
+  type = string
 }
 
 variable "tenant_id" {
-  default = ""
+  type = string
 }
 
 variable "subscription_id" {
-  default = ""
+  type = string
 }
 
 variable "rg_name" {
-  default = ""
+  type = string
 }
 
 variable "vault_name" {
-  default = "crm-shared-kv"
+  type = string
 }
 
 variable "secret_name" {
-  default = "eddi-crm-azure-devops-manage-agents-pat"
+  type = string
+}
+
+variable "tags" {
+  type    = map(string)
+  default = {}
 }
 
 variable "devops_org_token" {
-  default = "IMNOTATOKEN"
+  type = string
 }
 
 source "azure-arm" "devops-agent" {
