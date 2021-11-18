@@ -36,6 +36,7 @@ source "azure-arm" "devops-agent" {
   communicator              = "ssh"
   ssh_username              = "ubuntu"
   ssh_clear_authorized_keys = true
+  azure_tags                = var.tags
 
   os_type         = "Linux"
   image_publisher = "Canonical"
@@ -51,7 +52,7 @@ source "azure-arm" "devops-agent" {
 }
 
 locals {
-  var_retrieval = templatefile("templates/azure-vars.pkrtpl.hcl", {})
+  var_retrieval  = templatefile("templates/azure-vars.pkrtpl.hcl", {})
   scripts_folder = "${path.root}/scripts"
 }
 
