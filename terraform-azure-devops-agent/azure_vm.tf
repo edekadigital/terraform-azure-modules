@@ -28,6 +28,11 @@ variable "azure_vm_instance_size" {
 variable "azure_instance_count" {
   type = number
 }
+
+variable "azure_image_rg_name" {
+  type = string
+}
+
 locals {
   keyvault_devops_pat_secret_name = replace(var.devops_pat_secret_name, "/", "-")
 }
