@@ -34,7 +34,7 @@ data "amazon-ami" "ubuntu" {
 locals {
   source_ami_id   = data.amazon-ami.ubuntu.id
   source_ami_name = data.amazon-ami.ubuntu.name
-  var_retrieval   = templatefile("${path.root}/templates/aws-vars.pkrtpl.hcl", {})
+  var_retrieval   = templatefile("templates/aws-vars.pkrtpl.hcl", {})
   scripts_folder  = "${path.root}/scripts"
 }
 
