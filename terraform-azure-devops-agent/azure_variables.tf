@@ -2,7 +2,7 @@ variable "azure_devops_pat_keyvault_name" {
   type = string
 }
 
-variable "azure_devops_pat_keyvault_resource_grou" {
+variable "azure_devops_pat_keyvault_resource_group" {
   type = string
 }
 
@@ -10,7 +10,7 @@ variable "azure_devops_pat_secret_name" {
   type = string
 }
 
-variable "ssh_public_keys" {
+variable "azure_ssh_public_keys" {
   type    = list(string)
   default = []
 }
@@ -28,9 +28,25 @@ variable "azure_agent_image_id" {
   type = string
 }
 
+variable "azure_devops_agent_subnet_id" {
+  type = string
+}
+
 variable "existing_resource_group" {
   type    = string
   default = ""
+}
+
+variable "resource_location" {
+  description = "Azure location to deploy all the things"
+  type        = string
+  default     = "West Europe"
+}
+
+variable "azure_tags" {
+  description = "Tags to attach to all created Azure Resources for the Devops Agents"
+  type        = map(string)
+  default     = {}
 }
 
 # variable "key_vault_name" {
@@ -45,8 +61,8 @@ variable "existing_resource_group" {
 #   type    = string
 # }
 
-# locals {
-#   keyvault_devops_pat_secret_name = replace(var.devops_pat_secret_name, "/", "-")
-#   resource_group_name             = var.existing_resource_group == "" ? data.resource_group_name.devops-agent.name : azurerm_resource_group.devops_agent.name
-#   resource_group_location         = var.existing_resource_group == "" ? data.resource_group_name.devops-agent.location : azurerm_resource_group.devops_agent.location
-# }
+locals {
+  # keyvault_devops_pat_secret_name = replace(var.devops_pat_secret_name, "/", "-")
+  resource_group_name             = var.existing_resource_group == "" ? data.azurerm_resource_group.devops_agent[0].name : azurerm_resource_group.devops_agent[0].name
+  resource_group_location         = var.existing_resource_group == "" ? data.azurerm_resource_group.devops_agent[0].location : azurerm_resource_group.devops_agent[0].location
+}

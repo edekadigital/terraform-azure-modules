@@ -11,14 +11,14 @@ variable "aws_agent_base_image" {
   }
 }
 
-resource "aws_secretsmanager_secret" "devops_pat" {
-  name = var.devops_pat_secret_name
-}
+# resource "aws_secretsmanager_secret" "devops_pat" {
+#   name = var.devops_pat_secret_name
+# }
 
-resource "aws_secretsmanager_secret_version" "devops_pat" {
-  secret_id     = aws_secretsmanager_secret.devops_pat.id
-  secret_string = var.devops_pat
-}
+# resource "aws_secretsmanager_secret_version" "devops_pat" {
+#   secret_id     = aws_secretsmanager_secret.devops_pat.id
+#   secret_string = var.devops_pat
+# }
 
 module "ec2_instance" {
   count = var.aws_instance_count
@@ -36,7 +36,7 @@ module "ec2_instance" {
 
   user_data = templatefile("${path.module}/cloud-init.tpl", {
     ENV_VARS = {
-      "SECRET_ID"         = aws_secretsmanager_secret_version.devops_pat.arn
+      "SECRET_ID"         = var.aws_devops_pat_secret_arn
       "AGENT_NAME_PREFIX" = "${var.agent_name_prefix}-aws"
       "DEVOPS_ORG_URL"    = var.devops_org_url
       "DEVOPS_AGENT_POOL" = var.devops_agent_pool
@@ -113,7 +113,7 @@ data "aws_iam_policy_document" "devops_agent" {
       "secretsmanager:GetSecretValue"
     ]
     resources = [
-      aws_secretsmanager_secret_version.devops_pat.arn
+      var.aws_devops_pat_secret_arn
     ]
   }
 }
