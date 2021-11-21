@@ -1,8 +1,3 @@
-variable "project_name_as_resource_prefix" {
-  description = "Prefix for all the resource names"
-  type        = string
-}
-
 variable "azure_devops_pat_keyvault_name" {
   type = string
 }
