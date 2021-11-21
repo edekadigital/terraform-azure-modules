@@ -63,6 +63,6 @@ variable "azure_tags" {
 
 locals {
   # keyvault_devops_pat_secret_name = replace(var.devops_pat_secret_name, "/", "-")
-  resource_group_name             = var.existing_resource_group == "" ? data.azurerm_resource_group.devops_agent[0].name : azurerm_resource_group.devops_agent[0].name
-  resource_group_location         = var.existing_resource_group == "" ? data.azurerm_resource_group.devops_agent[0].location : azurerm_resource_group.devops_agent[0].location
+  resource_group_name     = var.existing_resource_group == "" ? data.azurerm_resource_group.devops_agent[0].name : azurerm_resource_group.devops_agent[0].name
+  resource_group_location = var.existing_resource_group == "" ? data.azurerm_resource_group.devops_agent[0].location : azurerm_resource_group.devops_agent[0].location
 }
