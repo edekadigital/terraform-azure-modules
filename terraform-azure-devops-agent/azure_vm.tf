@@ -82,11 +82,11 @@ resource "azurerm_network_interface" "devops_agent" {
 resource "azurerm_linux_virtual_machine" "devops_agent" {
   count                 = var.azure_instance_count
   name                  = format("azure-instance-%03d", count.index + 1)
-  resource_group_name   = var.existing_resource_group == "" ? data.resource_group_name.devops-agent.name : azurerm_resource_group.devops_agent.name # local.resource_group_name
+  resource_group_name   = var.existing_resource_group == "" ? data.resource_group_name.devops-agent.name : azurerm_resource_group.devops_agent.name         # local.resource_group_name
   location              = var.existing_resource_group == "" ? data.resource_group_name.devops-agent.location : azurerm_resource_group.devops_agent.location # local.resource_group_location
   size                  = var.azure_vm_instance_size
   admin_username        = "ubuntu"
-  source_image_id       = var.azure_agent_image_id  # data.azurerm_image.devops_agent_packer.id
+  source_image_id       = var.azure_agent_image_id # data.azurerm_image.devops_agent_packer.id
   network_interface_ids = [azurerm_network_interface.devops_agent[count.index].id]
 
   custom_data = base64encode(templatefile("${path.module}/cloud-init.tpl", {

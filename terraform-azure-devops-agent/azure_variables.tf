@@ -4,15 +4,15 @@ variable "project_name_as_resource_prefix" {
 }
 
 variable "azure_devops_pat_keyvault_name" {
-  type    = string
+  type = string
 }
 
 variable "azure_devops_pat_keyvault_resource_grou" {
-  type    = string
+  type = string
 }
 
 variable "azure_devops_pat_secret_name" {
-  type    = string
+  type = string
 }
 
 variable "ssh_public_keys" {
