@@ -1,16 +1,3 @@
-variable "aws_instance_count" {
-  type = number
-}
-
-variable "aws_agent_base_image" {
-  type    = string
-  default = ""
-  validation {
-    condition     = can(regex("^ami-.*", var.aws_agent_base_image))
-    error_message = "AMI image name must start with 'ami-'."
-  }
-}
-
 # resource "aws_secretsmanager_secret" "devops_pat" {
 #   name = var.devops_pat_secret_name
 # }
