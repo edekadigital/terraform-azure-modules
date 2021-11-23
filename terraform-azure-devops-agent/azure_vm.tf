@@ -77,10 +77,12 @@ resource "azurerm_network_interface" "devops_agent" {
     subnet_id                     = var.azure_devops_agent_subnet_id # azurerm_subnet.internal.id
     private_ip_address_allocation = "Dynamic"
   }
+
+  tags = var.azure_tags
 }
 
 resource "azurerm_linux_virtual_machine" "devops_agent" {
-  count                 = var.azure_instance_count
+  count                 = local.azure_instance_count
   name                  = format("azure-instance-%03d", count.index + 1)
   resource_group_name   = local.resource_group_name
   location              = local.resource_group_location

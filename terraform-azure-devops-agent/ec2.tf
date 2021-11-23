@@ -8,7 +8,7 @@
 # }
 
 module "ec2_instance" {
-  count = var.aws_instance_count
+  count = local.aws_instance_count
 
   source                 = "terraform-aws-modules/ec2-instance/aws"
   version                = "~> 3.0"
@@ -38,12 +38,7 @@ module "ec2_instance" {
     }
   ]
 
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-    service     = "azure-devops"
-    team        = "thundercats"
-  }
+  tags = var.aws_tags
 }
 
 resource "aws_iam_role" "devops_agent" {
