@@ -12,13 +12,13 @@ module "ec2_instance" {
 
   source                 = "terraform-aws-modules/ec2-instance/aws"
   version                = "~> 3.0"
-  name                   = format("instance-%03d", count.index + 1)
+  name                   = format("${var.project_name_as_resource_prefix}-aws-instance-%03d", count.index + 1)
   ami                    = var.aws_agent_base_image == "" ? data.aws_ami.ubuntu.id : var.aws_agent_base_image
-  instance_type          = "m5.xlarge"
-  key_name               = "edeka-shared.master"
+  instance_type          = var.aws_instance_type
+  key_name               = var.aws_ssh_key_name
   monitoring             = true
-  vpc_security_group_ids = ["sg-42a2db29"]
-  subnet_id              = "subnet-55d1fe1f"
+  vpc_security_group_ids = var.aws_security_group_ids
+  subnet_id              = var.aws_subnet_id
   iam_instance_profile   = aws_iam_instance_profile.devops_agent.name
 
   user_data = templatefile("${path.module}/cloud-init.tpl", {
@@ -42,7 +42,7 @@ module "ec2_instance" {
 }
 
 resource "aws_iam_role" "devops_agent" {
-  name_prefix        = "devops-agent-"
+  name_prefix        = "${var.project_name_as_resource_prefix}-devops-agent-"
   assume_role_policy = data.aws_iam_policy_document.devops_agent_assume.json
 }
 
@@ -62,8 +62,9 @@ data "aws_iam_policy_document" "devops_agent_assume" {
 }
 
 resource "aws_iam_role_policy_attachment" "devops_agent" {
+  count      = length(var.aws_role_policies)
   role       = aws_iam_role.devops_agent.id
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  policy_arn = var.aws_role_policies[count.index]
 }
 
 resource "aws_iam_instance_profile" "devops_agent" {

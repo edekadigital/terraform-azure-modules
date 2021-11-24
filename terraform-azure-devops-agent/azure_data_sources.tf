@@ -1,8 +1,8 @@
 data "azurerm_client_config" "current" {}
 
 data "azurerm_resource_group" "devops_agent" {
-  count = var.existing_resource_group == "" || var.azure_instance_count == 0 ? 0 : 1
-  name  = var.existing_resource_group
+  count = var.azure_existing_resource_group == "" || var.azure_instance_count == 0 ? 0 : 1
+  name  = var.azure_existing_resource_group
 }
 
 data "azurerm_key_vault" "devops_pat_key_vault" {
