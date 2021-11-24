@@ -10,9 +10,3 @@ data "azurerm_key_vault" "devops_pat_key_vault" {
   name                = var.azure_devops_pat_keyvault_name
   resource_group_name = var.azure_devops_pat_keyvault_resource_group
 }
-
-# data "azurerm_key_vault_secret" "example" {
-#   name              = var.azure_devops_pat_secret_name
-#   key_vkey_vault_id = "dd"
-# }
-

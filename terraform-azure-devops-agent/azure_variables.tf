@@ -49,20 +49,7 @@ variable "azure_tags" {
   default     = {}
 }
 
-# variable "key_vault_name" {
-#   type = string
-# }
-
-# variable "key_vault_rg_name" {
-#   type = string
-# }
-
-# variable "azure_devops_pat_secret_name" {
-#   type    = string
-# }
-
 locals {
-  # keyvault_devops_pat_secret_name = replace(var.devops_pat_secret_name, "/", "-")
   resource_group_name     = var.azure_existing_resource_group == "" ? azurerm_resource_group.devops_agent[0].name : data.azurerm_resource_group.devops_agent[0].name
   resource_group_location = var.azure_existing_resource_group == "" ? azurerm_resource_group.devops_agent[0].location : data.azurerm_resource_group.devops_agent[0].location
   azure_instance_count    = var.azure_agent_image_id == "" ? 0 : var.azure_instance_count

@@ -26,7 +26,7 @@ variable "aws_instance_type" {
 }
 
 variable "aws_ssh_key_name" {
-  type = string
+  type    = string
   default = ""
 }
 
@@ -35,12 +35,12 @@ variable "aws_subnet_id" {
 }
 
 variable "aws_security_group_ids" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
 variable "aws_role_policies" {
-  type = list(string)
+  type    = list(string)
   default = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
 }
 

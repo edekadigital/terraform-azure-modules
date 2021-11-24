@@ -1,71 +1,4 @@
 
-# resource "azurerm_resource_group" "main" {
-#   name     = "rg-${var.prefix}-resources"
-#   location = "West Europe"
-# }
-
-# resource "azurerm_key_vault_secret" "devops-pat" {
-#   name         = "${var.azure_devops_pat_secret_prefix}${local.keyvault_devops_pat_secret_name}"
-#   key_vault_id = data.azurerm_key_vault.shared-kv.id
-#   value        = var.devops_pat
-# }
-
-# resource "azurerm_virtual_network" "main" {
-#   name                = "${var.prefix}-network"
-#   address_space       = ["10.0.0.0/16"]
-#   location            = azurerm_resource_group.main.location
-#   resource_group_name = azurerm_resource_group.main.name
-# }
-
-# resource "azurerm_subnet" "internal" {
-#   name                 = "internal"
-#   resource_group_name  = azurerm_resource_group.main.name
-#   virtual_network_name = azurerm_virtual_network.main.name
-#   address_prefixes     = ["10.0.2.0/24"]
-# }
-
-# resource "azurerm_subnet" "bastion" {
-#   name                 = "bastion"
-#   resource_group_name  = azurerm_resource_group.main.name
-#   virtual_network_name = azurerm_virtual_network.main.name
-#   address_prefixes     = ["10.0.0.0/28"]
-# }
-
-# resource "azurerm_network_security_group" "bastion" {
-#   name                = "${var.prefix}-bastion-nsg"
-#   resource_group_name = azurerm_resource_group.main.name
-#   location            = azurerm_resource_group.main.location
-# }
-
-# resource "azurerm_subnet_network_security_group_association" "bastion" {
-#   network_security_group_id = azurerm_network_security_group.bastion.id
-#   subnet_id                 = azurerm_subnet.bastion.id
-# }
-
-# resource "azurerm_public_ip" "main" {
-#   name                = "${var.prefix}-public-ip"
-#   location            = azurerm_resource_group.main.location
-#   resource_group_name = azurerm_resource_group.main.name
-#   allocation_method   = "Static"
-#   sku                 = "Standard"
-# }
-
-# resource "azurerm_nat_gateway" "main" {
-#   name                = "${var.prefix}-natgateway"
-#   location            = azurerm_resource_group.main.location
-#   resource_group_name = azurerm_resource_group.main.name
-# }
-
-# resource "azurerm_nat_gateway_public_ip_association" "main" {
-#   nat_gateway_id       = azurerm_nat_gateway.main.id
-#   public_ip_address_id = azurerm_public_ip.main.id
-# }
-
-# resource "azurerm_subnet_nat_gateway_association" "example" {
-#   subnet_id      = azurerm_subnet.internal.id
-#   nat_gateway_id = azurerm_nat_gateway.main.id
-# }
-
 resource "azurerm_network_interface" "devops_agent" {
   count               = var.azure_instance_count
   name                = format("%s-%03d-nic", var.project_name_as_resource_prefix, count.index)
@@ -74,7 +7,7 @@ resource "azurerm_network_interface" "devops_agent" {
 
   ip_configuration {
     name                          = "ip_config"
-    subnet_id                     = var.azure_devops_agent_subnet_id # azurerm_subnet.internal.id
+    subnet_id                     = var.azure_devops_agent_subnet_id
     private_ip_address_allocation = "Dynamic"
   }
 
@@ -88,7 +21,7 @@ resource "azurerm_linux_virtual_machine" "devops_agent" {
   location              = local.resource_group_location
   size                  = var.azure_vm_instance_size
   admin_username        = "ubuntu"
-  source_image_id       = var.azure_agent_image_id # data.azurerm_image.devops_agent_packer.id
+  source_image_id       = var.azure_agent_image_id
   network_interface_ids = [azurerm_network_interface.devops_agent[count.index].id]
 
   custom_data = base64encode(templatefile("${path.module}/cloud-init.tpl", {

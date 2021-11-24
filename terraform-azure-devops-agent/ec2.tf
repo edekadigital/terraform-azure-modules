@@ -1,12 +1,3 @@
-# resource "aws_secretsmanager_secret" "devops_pat" {
-#   name = var.devops_pat_secret_name
-# }
-
-# resource "aws_secretsmanager_secret_version" "devops_pat" {
-#   secret_id     = aws_secretsmanager_secret.devops_pat.id
-#   secret_string = var.devops_pat
-# }
-
 module "ec2_instance" {
   count = local.aws_instance_count
 
