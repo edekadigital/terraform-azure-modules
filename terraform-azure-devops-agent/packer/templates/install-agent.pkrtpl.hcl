@@ -6,8 +6,6 @@ env
 
 ${RETRIEVE_PARAMETERS}
 
-#DEVOPS_ORG_URL= #"https://dev.azure.com/EDDI-CRM"
-#DEVOPS_AGENT_POOL="aws-by-thundercats"
 NAME=$AGENT_NAME_PREFIX-$INSTANCE_NAME
 
 cd /src
