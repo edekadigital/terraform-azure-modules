@@ -39,7 +39,7 @@ locals {
 }
 
 source "amazon-ebs" "devops-agent" {
-  ami_name                    = "az-devops-agent-{{timestamp}}"
+  ami_name                    = "az-devops-agent"
   vpc_id                      = var.vpc_id
   instance_type               = "m5.large"
   region                      = var.region
