@@ -124,3 +124,21 @@ locals {
   assigned_ressource_group_name = "${var.project_name_as_resource_prefix}-datadog-rg"
   ressource_group_name          = var.existing_ressource_group != "" ? var.existing_ressource_group : local.assigned_ressource_group_name
 }
+
+variable "eventhub_tu_capacity" {
+  description = "Defines the throughput units (TU) for an eventhub namespace."
+  type        = number
+  default     = 1
+}
+
+variable "auto_inflate_enabled" {
+  description = "Enable this feature to automatically scale up the eventhub by increasing the number of TUs managed by azure."
+  type        = bool
+  default     = false
+}
+
+variable "maximum_throughput_units" {
+  description = "Specifies the maximum number of throughput units when auto_inflate_enabled is enabled. (1-20)"
+  type        = number
+  default     = 5
+}

@@ -22,6 +22,10 @@ Forwarding logs received from eventhub to datadog.
 * __datadog_monitors_priority__: Priority of monitors in datadog. Defaults to `2`.
 * __datadog_monitors_tags__: Additional tags to attach to monitors. Defaults to `{service = "log-forwarder"}`.  
 * __azure_tags__: Tags to attach to all created Azure Resources for Log Forwarder. Defaults to empty map. If `datadog_create_dashboard = true`, at least `env` tag with value must be provided to match with pre-configured `env` filter in the dashboard.
+* __eventhub_tu_capacity__: Defines the throughput units (TU) for an eventhub namespace.
+* __auto_inflate_enabled__: Enable this feature to automatically scale up the eventhub by increasing the number of TUs managed by azure.
+* __maximum_throughput_units__: Specifies the maximum number of throughput units when auto_inflate_enabled is enabled. (1-20)
+
 
 _Example of usage:_
 
