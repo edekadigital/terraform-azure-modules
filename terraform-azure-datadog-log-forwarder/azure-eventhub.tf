@@ -11,7 +11,7 @@ resource "azurerm_eventhub_namespace" "datadog" {
   name                     = "${var.project_name_as_resource_prefix}-datadog-evhn"
   location                 = var.resource_location
   resource_group_name      = local.ressource_group_name
-  sku                      = "Basic"
+  sku                      = var.eventhub_namespace_sku
   capacity                 = var.eventhub_tu_capacity
   auto_inflate_enabled     = var.auto_inflate_enabled
   maximum_throughput_units = var.maximum_throughput_units

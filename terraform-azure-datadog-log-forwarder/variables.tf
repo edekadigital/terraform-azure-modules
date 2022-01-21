@@ -132,7 +132,7 @@ variable "eventhub_tu_capacity" {
 }
 
 variable "auto_inflate_enabled" {
-  description = "Enable this feature to automatically scale up the eventhub by increasing the number of TUs managed by azure."
+  description = "Enable this feature to automatically scale up the eventhub by increasing the number of TUs managed by azure. (only available for standard tier and higher)"
   type        = bool
   default     = false
 }
@@ -141,4 +141,10 @@ variable "maximum_throughput_units" {
   description = "Specifies the maximum number of throughput units when auto_inflate_enabled is enabled. (1-20)"
   type        = number
   default     = 5
+}
+
+variable "eventhub_namespace_sku" {
+  description = "Defines which tier to use for the eventhub namespace (default basic)"
+  type        = string
+  default     = "Basic"
 }
