@@ -50,6 +50,8 @@ data "azurerm_storage_account_sas" "sas_deploy_datadog" {
     create  = false
     update  = false
     process = false
+    filter  = false
+    tag     = false
   }
 }
 
@@ -131,7 +133,7 @@ resource "null_resource" "trigger_sync_datadog" {
   }
 
   provisioner "local-exec" {
-    command = "curl -sf -d '' 'https://${azurerm_function_app.datadog.default_hostname}/admin/host/synctriggers?code=${data.azurerm_function_app_host_keys.datadog.master_key}'"
+    command = "curl -sf -d '' 'https://${azurerm_function_app.datadog.default_hostname}/admin/host/synctriggers?code=${data.azurerm_function_app_host_keys.datadog.primary_key}'"
   }
 }
 

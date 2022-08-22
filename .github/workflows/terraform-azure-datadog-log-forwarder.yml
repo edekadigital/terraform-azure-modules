@@ -68,7 +68,3 @@ jobs:
         cd log-forwarder
         npm ci
         npm test
-
-
-
-
